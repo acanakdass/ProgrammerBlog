@@ -30,7 +30,7 @@ namespace ProgrammerBlog.Shared.Data.Concrete.EntityFramework
 
         public async Task DeleteAsync(TEntity entity)
         {
-            //remove method is not async so we mke it async with task.run
+            //remove method is not async so we make it async with task.run
             await Task.Run(() =>
             {
                 _context.Set<TEntity>().Remove(entity);

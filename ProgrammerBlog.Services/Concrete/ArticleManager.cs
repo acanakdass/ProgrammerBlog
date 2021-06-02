@@ -106,7 +106,7 @@ namespace ProgrammerBlog.Services.Concrete
             }
             return new DataResult<ArticleListDto>(ResultStatus.Error, "Makale Bulunamadı", null);
         }
-        
+
         public async Task<IResult> Add(ArticleAddDto articleAddDto, string creatorName)
         {
             //Article dönecek bir map
@@ -121,17 +121,38 @@ namespace ProgrammerBlog.Services.Concrete
 
         public async Task<IResult> Delete(int articleId, string modifierName)
         {
-            throw new NotImplementedException();
+            var result = await _unitOfWork.Articles.IsAnyAsync(a => a.Id == articleId);
+            if (result)
+            {
+                var article = await _unitOfWork.Articles.GetAsync(a => a.Id == articleId);
+                article.ModifierName = modifierName;
+                article.IsDeleted = true;
+                await _unitOfWork.Articles.UpdateAsync(article).ContinueWith(TAsk => _unitOfWork.SaveAsync());
+                return new Result(ResultStatus.Success, $"{article.Title} başlıklı makale başarıyla silindi.");
+            }
+            return new DataResult<ArticleListDto>(ResultStatus.Error, "Makale Bulunamadı", null);
+
         }
 
-        public Task<IResult> HardDelete(int articleId)
+        public async Task<IResult> HardDelete(int articleId)
         {
-            throw new NotImplementedException();
+            var result = await _unitOfWork.Articles.IsAnyAsync(a => a.Id == articleId);
+            if (result)
+            {
+                var article = await _unitOfWork.Articles.GetAsync(a => a.Id == articleId);
+                await _unitOfWork.Articles.DeleteAsync(article).ContinueWith(TAsk => _unitOfWork.SaveAsync());
+                return new Result(ResultStatus.Success, $"{article.Title} başlıklı makale başarıyla kalıcı olarak silindi.");
+            }
+            return new DataResult<ArticleListDto>(ResultStatus.Error, "Makale Bulunamadı", null);
+
         }
 
-        public Task<IResult> Update(ArticleUpdateDto articleUpdateDto, string modifierName)
+        public async Task<IResult> Update(ArticleUpdateDto articleUpdateDto, string modifierName)
         {
-            throw new NotImplementedException();
+            var article = _mapper.Map<Article>(articleUpdateDto);
+            article.ModifierName = modifierName;
+            await _unitOfWork.Articles.UpdateAsync(article).ContinueWith(task => _unitOfWork.SaveAsync());
+            return new Result(ResultStatus.Success, $"{articleUpdateDto.Title} başlıklı makale başarıyla güncellendi.");
         }
     }
 }

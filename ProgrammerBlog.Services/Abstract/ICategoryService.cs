@@ -11,12 +11,20 @@ namespace ProgrammerBlog.Services.Abstract
 {
     public interface ICategoryService
     {
-        Task<IDataResult<Category>> Get(int categoryId);
-        Task<IDataResult<IList<Category>>> GetAll(int categoryId);
-        Task<IDataResult<IList<Category>>> GetAllNonDeleted(int categoryId);
+        Task<IDataResult<CategoryDto>> Get(int categoryId);
+
+        Task<IDataResult<CategoryListDto>> GetAll();
+
+        Task<IDataResult<CategoryListDto>> GetAllNonDeleted();
+
+        Task<IDataResult<CategoryListDto>> GetAllNonDeletedAndActive();
+
         Task<IResult> Add(CategoryAddDto categoryAddDto,string creatorName);
+
         Task<IResult> Update(CategoryUpdateDto categoryUpdateDto, string modifierName);
+
         Task<IResult> Delete(int categoryId,string modifierName); //make ısDeleted true
+
         Task<IResult> HardDelete(int categoryId);
     }
 }
