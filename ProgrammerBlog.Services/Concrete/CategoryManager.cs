@@ -45,7 +45,7 @@ namespace ProgrammerBlog.Services.Concrete
             return new DataResult<CategoryDto>(ResultStatus.Success, $"{categoryAddDto.Name} adlı kategori başarıyla eklendi.", addedCategoryDto);
         }
 
-        public async Task<IResult> Delete(int categoryId, string modifierName)
+        public async Task<IDataResult<CategoryDto>> Delete(int categoryId, string modifierName)
         {
             var categoryToDelete = await _unitOfWork.Categories.GetAsync(c => c.Id == categoryId);
             if (categoryToDelete != null)
@@ -53,12 +53,24 @@ namespace ProgrammerBlog.Services.Concrete
                 categoryToDelete.IsDeleted = true;
                 categoryToDelete.ModifierName = modifierName;
                 categoryToDelete.ModifiedDate = DateTime.Now;
-                await _unitOfWork.Categories.UpdateAsync(categoryToDelete);
+                var deletedCategory = await _unitOfWork.Categories.UpdateAsync(categoryToDelete);
                 await _unitOfWork.SaveAsync();
+                var deletedCategoryDto = new CategoryDto
+                {
+                    Category = deletedCategory,
+                    ResultStatus = ResultStatus.Success,
+                    Message = $"{ deletedCategory.Name } adlı kategori başarıyla silindi."
+                };
 
-                return new Result(ResultStatus.Success, $"{categoryToDelete.Name} adlı kategori başarıyla silindi.");
+                await _unitOfWork.SaveAsync();
+                return new DataResult<CategoryDto>(ResultStatus.Success, $"{categoryToDelete.Name} adlı kategori başarıyla güncellendi.", deletedCategoryDto);
             }
-            return new DataResult<IList<Category>>(ResultStatus.Error, "Böyle bir kategori bulunamadı.", null);
+            return new DataResult<CategoryDto>(ResultStatus.Error, "Böyle bir kategori bulunamadı.", new CategoryDto
+            {
+                Category = null,
+                ResultStatus=ResultStatus.Error,
+                Message= "Böyle bir kategori bulunamadı."
+            });
         }
 
         public async Task<IDataResult<CategoryDto>> Get(int categoryId)
@@ -103,20 +115,31 @@ namespace ProgrammerBlog.Services.Concrete
             return new DataResult<CategoryListDto>(ResultStatus.Error, ErrorDto); //data:null
         }
 
+
         public async Task<IDataResult<CategoryListDto>> GetAllNonDeleted()
         {
-            var categories = await _unitOfWork.Categories.GetAllAsync(c => !c.IsDeleted, c => c.Articles); //include articles
+            var categories = await _unitOfWork.Categories.GetAllAsync(c=>!c.IsDeleted, c => c.Articles); //include articles
             if (categories.Count > -1)
             {
                 var categoryListDto = new CategoryListDto
                 {
                     Categories = categories,
-                    ResultStatus = ResultStatus.Success
+                    ResultStatus = ResultStatus.Success,
+
                 };
                 return new DataResult<CategoryListDto>(ResultStatus.Success, categoryListDto);
             }
-            return new DataResult<CategoryListDto>(ResultStatus.Error, "Kategori bulunamadı", null); //data:null
+            var ErrorDto = new CategoryListDto
+            {
+                Categories = null,
+                ResultStatus = ResultStatus.Error,
+                Message = "Kategori bulunamadı"
+            };
+            return new DataResult<CategoryListDto>(ResultStatus.Error, ErrorDto); //data:null
         }
+
+
+
         public async Task<IDataResult<CategoryListDto>> GetAllNonDeletedAndActive()
         {
             var categories = await _unitOfWork.Categories.GetAllAsync(c => !c.IsDeleted && c.IsActive, c => c.Articles); //include articles
@@ -158,7 +181,7 @@ namespace ProgrammerBlog.Services.Concrete
             {
                 Category = updatedCategory,
                 ResultStatus = ResultStatus.Success,
-                Message = $"{ categoryUpdateDto.Name } adlı kategori başarıyla eklendi."
+                Message = $"{ categoryUpdateDto.Name } adlı kategori başarıyla güncellendi."
             };
 
 

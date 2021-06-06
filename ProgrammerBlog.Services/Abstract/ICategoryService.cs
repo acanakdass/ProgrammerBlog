@@ -23,7 +23,7 @@ namespace ProgrammerBlog.Services.Abstract
 
         Task<IDataResult<CategoryDto>> Update(CategoryUpdateDto categoryUpdateDto, string modifierName);
 
-        Task<IResult> Delete(int categoryId, string modifierName); //make ısDeleted true
+        Task<IDataResult<CategoryDto>> Delete(int categoryId, string modifierName); //make ısDeleted true
 
         Task<IResult> HardDelete(int categoryId);
     }

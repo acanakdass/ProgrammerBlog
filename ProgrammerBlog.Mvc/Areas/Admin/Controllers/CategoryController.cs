@@ -25,7 +25,7 @@ namespace ProgrammerBlog.Mvc.Areas.Admin.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var result = await _categoryService.GetAll();
+            var result = await _categoryService.GetAllNonDeleted();
 
             return View(result.Data);
 
@@ -70,13 +70,34 @@ namespace ProgrammerBlog.Mvc.Areas.Admin.Controllers
             return Json(categories);
         }
 
+        public async Task<JsonResult> GetNonDeletedCategories()
+        {
+            var result = await _categoryService.GetAllNonDeleted();
+            var categories = JsonSerializer.Serialize(result.Data, new JsonSerializerOptions
+            {
+                ReferenceHandler = ReferenceHandler.Preserve
+            });
+            return Json(categories);
+        }
+
+        [HttpPost]
         public async Task<JsonResult> Delete(int categoryId)
         {
             var result = await _categoryService.Delete(categoryId, "Ahmet Can Akdaş");
-            var ajaxResult = JsonSerializer.Serialize(result);
-            return Json(ajaxResult);
+            var deletedCategory = JsonSerializer.Serialize(result.Data);
+            return Json(deletedCategory);
         }
 
+        [HttpGet]
+        public async Task<JsonResult> GetCategory(int categoryId)
+        {
+            var result = await _categoryService.Get(categoryId);
+            var category = JsonSerializer.Serialize(result.Data, new JsonSerializerOptions
+            {
+                ReferenceHandler = ReferenceHandler.Preserve
+            });
+            return Json(category);
+        }
     }
 }
 
