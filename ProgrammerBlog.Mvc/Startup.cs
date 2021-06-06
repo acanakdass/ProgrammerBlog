@@ -4,10 +4,12 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using ProgrammerBlog.Services.AutoMapper.Profiles;
 using ProgrammerBlog.Services.Extentions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace ProgrammerBlog.Mvc
@@ -24,8 +26,15 @@ namespace ProgrammerBlog.Mvc
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllersWithViews().AddRazorRuntimeCompilation();
-            services.AddAutoMapper(typeof(Startup)); //Derlenme esnasýnda automapper'ýn sýnýflarý taramasýný saðlar
+
+            services.AddControllersWithViews().AddJsonOptions(opt =>
+            {
+                opt.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                opt.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
+            });
+
+            //services.AddControllersWithViews().AddRazorRuntimeCompilation();
+            services.AddAutoMapper(typeof(CategoryProfile), typeof(ArticleProfile)); //Derlenme esnasýnda automapper'ýn sýnýflarý taramasýný saðlar
             services.LoadMyServices();
         }
 

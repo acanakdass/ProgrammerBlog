@@ -23,6 +23,7 @@ namespace ProgrammerBlog.Entities.Dto
         [DisplayName("Kategori Açıklaması")]
         [MaxLength(70, ErrorMessage = "{0} {1} karakterden uzun olmamalı.")] // {1} display name(max-length)
         [MinLength(3, ErrorMessage = "{0} {1} karakterden kısa olmamalı.")] // {1} display name(min-length)
+
         public string Description { get; set; }
 
         [DisplayName("Kategori Hakkında Not")]

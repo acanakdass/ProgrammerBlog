@@ -1,0 +1,43 @@
+﻿@model CategoryAddDto
+
+
+
+<div class="modal fade" tabindex="-1"role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fas fa-plus"></i> Kategori Ekle</h5>
+
+                <button type="button" class="close" data-dismiss="modal" aria-label="Kapat">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form asp-action="Add" id="form-category-add" method="post">
+                    <input type="hidden" name="IsValid" value="@ViewData.ModelState.IsValid.ToString()" />
+                    <div asp-validation-summary="All" class="text-danger" id="validationSummary" aria-hidden="true" ></div>
+
+                    <div class="form-group">
+                        <label asp-for="Name"></label>
+                        <input class="form-control" asp-for="Name" />
+                        <span class="text-danger" asp-validation-for="Name"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Description"></label>
+                        <input class="form-control" asp-for="Description" />
+                        <span class="text-danger" asp-validation-for="Description"></span>
+                    </div>
+                    <div class="form-group form-check">
+                        <input type="checkbox" class="form-check-input" asp-for="IsActive" />
+                        <label class="form-check-label" asp-for="IsActive"></label>
+                        <span class="text-danger" asp-validation-for="IsActive"></span>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger btn-block" data-bs-dismiss="modal"><i class="fas fa-times"></i> Vazgeç</button>
+                <button type="button" class="btn btn-primary btn-block" id="btnSave"><i class="fas fa-save"></i> Değişiklikleri Kaydet</button>
+            </div>
+        </div>
+    </div>
+</div>

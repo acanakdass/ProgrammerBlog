@@ -19,11 +19,11 @@ namespace ProgrammerBlog.Services.Abstract
 
         Task<IDataResult<CategoryListDto>> GetAllNonDeletedAndActive();
 
-        Task<IResult> Add(CategoryAddDto categoryAddDto,string creatorName);
+        Task<IDataResult<CategoryDto>> Add(CategoryAddDto categoryAddDto, string creatorName);
 
-        Task<IResult> Update(CategoryUpdateDto categoryUpdateDto, string modifierName);
+        Task<IDataResult<CategoryDto>> Update(CategoryUpdateDto categoryUpdateDto, string modifierName);
 
-        Task<IResult> Delete(int categoryId,string modifierName); //make ısDeleted true
+        Task<IResult> Delete(int categoryId, string modifierName); //make ısDeleted true
 
         Task<IResult> HardDelete(int categoryId);
     }

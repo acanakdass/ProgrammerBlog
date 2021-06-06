@@ -7,16 +7,16 @@ using System.Threading.Tasks;
 
 namespace ProgrammerBlog.Shared.Entities.Abstract
 {
-    public interface IEntityRepository<Type> where Type:class,IEntity,new()
+    public interface IEntityRepository<Type> where Type : class, IEntity, new()
     {
         Task<Type> GetAsync(Expression<Func<Type, bool>> predicate, params Expression<Func<Type, object>>[] includeProperties);
 
-        Task<IList<Type>> GetAllAsync(Expression<Func<Type, bool>> predicate =null, params Expression<Func<Type, object>>[] includeProperties);
+        Task<IList<Type>> GetAllAsync(Expression<Func<Type, bool>> predicate = null, params Expression<Func<Type, object>>[] includeProperties);
         //predicate null verildi, null gelmez ise gelen bilgiye göre filtrelenecek
 
-        Task AddAsync(Type entity);
+        Task<Type> AddAsync(Type entity);
 
-        Task UpdateAsync(Type entity);
+        Task<Type> UpdateAsync(Type entity);
 
         Task DeleteAsync(Type entity);
 

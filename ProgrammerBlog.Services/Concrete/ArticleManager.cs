@@ -115,7 +115,8 @@ namespace ProgrammerBlog.Services.Concrete
             article.ModifierName = creatorName;
             article.UserId = 1;
 
-            await _unitOfWork.Articles.AddAsync(article).ContinueWith(task => _unitOfWork.SaveAsync());
+            await _unitOfWork.Articles.AddAsync(article);
+            await _unitOfWork.SaveAsync();
             return new Result(ResultStatus.Success, $"{articleAddDto.Title} başlıklı makale başarıyla eklendi.");
         }
 
@@ -127,7 +128,9 @@ namespace ProgrammerBlog.Services.Concrete
                 var article = await _unitOfWork.Articles.GetAsync(a => a.Id == articleId);
                 article.ModifierName = modifierName;
                 article.IsDeleted = true;
-                await _unitOfWork.Articles.UpdateAsync(article).ContinueWith(TAsk => _unitOfWork.SaveAsync());
+                await _unitOfWork.Articles.UpdateAsync(article);
+                await _unitOfWork.SaveAsync();
+
                 return new Result(ResultStatus.Success, $"{article.Title} başlıklı makale başarıyla silindi.");
             }
             return new DataResult<ArticleListDto>(ResultStatus.Error, "Makale Bulunamadı", null);
@@ -140,7 +143,10 @@ namespace ProgrammerBlog.Services.Concrete
             if (result)
             {
                 var article = await _unitOfWork.Articles.GetAsync(a => a.Id == articleId);
-                await _unitOfWork.Articles.DeleteAsync(article).ContinueWith(TAsk => _unitOfWork.SaveAsync());
+                await _unitOfWork.Articles.DeleteAsync(article);
+                await _unitOfWork.SaveAsync();
+
+
                 return new Result(ResultStatus.Success, $"{article.Title} başlıklı makale başarıyla kalıcı olarak silindi.");
             }
             return new DataResult<ArticleListDto>(ResultStatus.Error, "Makale Bulunamadı", null);
@@ -151,7 +157,9 @@ namespace ProgrammerBlog.Services.Concrete
         {
             var article = _mapper.Map<Article>(articleUpdateDto);
             article.ModifierName = modifierName;
-            await _unitOfWork.Articles.UpdateAsync(article).ContinueWith(task => _unitOfWork.SaveAsync());
+            await _unitOfWork.Articles.UpdateAsync(article);
+            await _unitOfWork.SaveAsync();
+
             return new Result(ResultStatus.Success, $"{articleUpdateDto.Title} başlıklı makale başarıyla güncellendi.");
         }
     }
