@@ -21,7 +21,7 @@
                 </div>
             </div>
             <div class="table-responsive">
-                <table class="table table-bordered" id="categoriesTable" width="100%" cellspacing="0">
+                <table class="table table-bordered table-striped" id="categoriesTable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
                             <th>Id</th>
@@ -52,7 +52,7 @@
                                 <td>@categoryItem.ModifiedDate</td>
                                 <td>@categoryItem.ModifierName</td>
                                 <td style="padding:3px">
-                                    <button class="btn btn-primary btn-block btn-sm"><i class="fas fa-edit"></i> Düzenle</button>
+                                    <button id="btnUpdate" data-id="@categoryItem.Id" class="btn btn-primary btn-block btn-sm"><i class="fas fa-edit"></i> Düzenle</button>
                                     <button id="btnDelete" class="btn btn-danger btn-block btn-sm" data-id="@categoryItem.Id"><i class="fas fa-minus-circle"></i> Sil</button>
                                 </td>
                             </tr>

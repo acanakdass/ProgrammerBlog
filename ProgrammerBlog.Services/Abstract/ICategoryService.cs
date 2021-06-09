@@ -13,6 +13,8 @@ namespace ProgrammerBlog.Services.Abstract
     {
         Task<IDataResult<CategoryDto>> Get(int categoryId);
 
+        Task<IDataResult<CategoryUpdateDto>> GetCategoryUpdateDto(int categoryId);
+
         Task<IDataResult<CategoryListDto>> GetAll();
 
         Task<IDataResult<CategoryListDto>> GetAllNonDeleted();

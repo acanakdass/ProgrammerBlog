@@ -40,9 +40,9 @@ namespace ProgrammerBlog.Data.Concrete.EntityFramework.Mappings
             builder.Property(a => a.IsDeleted).IsRequired();
             builder.Property(a => a.Note).HasMaxLength(500);
 
-            //çpka çok ilişki article/user
-            builder.HasOne<Category>(a => a.Category).WithMany(c => c.Articles).HasForeignKey(a => a.CategoryId);
             //bire çok ilişki category/article
+            builder.HasOne<Category>(a => a.Category).WithMany(c => c.Articles).HasForeignKey(a => a.CategoryId);
+            //çpka çok ilişki article/user
             builder.HasOne<User>(a => a.User).WithMany(u => u.Articles).HasForeignKey(a => a.UserId);
 
             builder.ToTable("Articles");

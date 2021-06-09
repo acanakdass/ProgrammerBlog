@@ -30,6 +30,14 @@ namespace ProgrammerBlog.Mvc.Areas.Admin.Controllers
             return View(result.Data);
 
         }
+
+
+
+        /// ADD CATEGORY
+
+
+
+
         [HttpGet]
         public IActionResult Add()
         {
@@ -59,6 +67,26 @@ namespace ProgrammerBlog.Mvc.Areas.Admin.Controllers
             });
             return Json(categoryAddAjaxErrorModel);
         }
+
+                                
+                        /// UPDATE CATEGORY
+
+
+        [HttpGet]
+        public async Task<IActionResult> Update(int categoryId)
+        {
+            var result = await _categoryService.GetCategoryUpdateDto(categoryId);
+            if (result.ResultStatus == ResultStatus.Success)
+            {
+                return PartialView("_CategoryUpdatePartial", result.Data);
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+
+
 
         public async Task<JsonResult> GetAllCategories()
         {

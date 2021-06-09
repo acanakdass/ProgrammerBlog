@@ -48,7 +48,7 @@
                                                             <td>${category.ModifiedDate}</td>
                                                             <td>${category.ModifierName}</td>
                                                             <td style="padding:3px">
-                                                                <button class="btn btn-primary btn-block btn-sm"><i class="fas fa-edit"></i> Düzenle</button>
+                                                                <button id="btnUpdate" class="btn btn-primary btn-block btn-sm" data-id="${category.Id}"><i class="fas fa-edit"></i> Düzenle</button>
                                                                 <button id="btnDelete" class="btn btn-danger btn-block btn-sm" data-id="${category.Id}"><i class="fas fa-minus-circle"></i> Sil</button>
                                                             </td>
                                                         </tr>`;
@@ -66,7 +66,7 @@
                         error: (err) => {
                             $('.spinner-border').hide();
                             $('#categoriesTable').fadeIn(500);
-                            toatr.error(`$(err.responseText)`, 'İşlem Başarısız');
+                            toastr.error(`$(err.responseText)`, 'İşlem Başarısız');
 
                         }
                     })
@@ -290,10 +290,10 @@
             $.post(actionUrl, dataToSend).done((data) => {   //form post edildi ve isValid ise veritabanına eklendi
                 //data : controller'da post metodunda return edilen değerdir.
                 const categoryAddAjaxViewModel = jQuery.parseJSON(data); //data ile dönen categoryAddAjaxViewModel nesnesini
-                //jquery ile okuyabilmek için JSON'a parse ettim.
+                //jquery ile okuyabilmek için JSON'a parse etme.
                 const newFormBody = $('.modal-body', categoryAddAjaxViewModel.CategoryAddPartial); //form isvalid :false ise terkar gösterilecek form body'si
-                placeHolderDiv.find('.modal-body').replaceWith(newFormBody); //önceki modal-body alanını yenisiyle değiştirir.
                 //verilen CAtegoryAddPartial içerisindeki modal-body classlı elementi alır
+                placeHolderDiv.find('.modal-body').replaceWith(newFormBody); //önceki modal-body alanını yenisiyle değiştirir.
                 console.log(newFormBody.find('[name="IsValid"]').val());
                 const isFormValid = newFormBody.find('[name="IsValid"]').val() === 'True';
                 if (isFormValid) {
@@ -309,7 +309,7 @@
                                 <td>${categoryAddAjaxViewModel.CategoryDto.Category.ModifiedDate}</td>
                                 <td>${categoryAddAjaxViewModel.CategoryDto.Category.ModifierName}</td>
                                 <td style="padding:3px">
-                                        <button class="btn btn-primary btn-block btn-sm"><i class="fas fa-edit"></i> Düzenle</button>
+                                        <button id="btnUpdate" class="btn btn-primary btn-block btn-sm"><i class="fas fa-edit" data-id="${category.Id}"></i> Düzenle</button>
                                         <button id="btnDelete" class="btn btn-danger btn-block btn-sm" data-id="${categoryAddAjaxViewModel.CategoryDto.Category.Id}"><i class="fas fa-minus-circle"></i> Sil</button>
                                 </td>
                             </tr>`;
@@ -317,6 +317,11 @@
                     $('#categoriesTable').append(newTableRowObject);
                     newTableRowObject.hide();
                     newTableRowObject.fadeIn(500);
+                    Swal.fire(
+                        'Başarılı!',
+                        `${categoryAddAjaxViewModel.CategoryDto.Category.Name} adlı kategori başarıyla oluşturuldu.`,
+                        'success'
+                    );
                     toastr.success(`${categoryAddAjaxViewModel.CategoryDto.Message}`, 'Başarılı İşlem!');
                 } else {
                     $('#validationSummary > ul > li').each(function () {
@@ -362,6 +367,7 @@
                                 `${categoryDto.Category.Name} adlı kategori başarıyla silindi.`,
                                 'success'
                             );
+                            toastr.info(`${categoryDto.Category.Name} adlı kategori başarıyla silindi.`, "Silindi");
                             deletedTableRow.fadeOut(1000);
 
                         } else {
@@ -369,7 +375,7 @@
                                 icon: 'error',
                                 title: 'Oops...',
                                 text: `${categoryDto.message}`,
-                            })
+                            });
                         }
                     },
                     error: (err) => {
@@ -378,6 +384,21 @@
                 });
 
             }
+        });
+    });
+
+    $(function () {
+        const url = '/Admin/Category/Update/';                  //istek yapılacak controller metodu
+        const placeHolderDiv = $('#modalPlaceHolder');
+        $(document).on('click', '#btnUpdate', function (e) {
+            e.preventDefault();
+            const id = $(this).attr('data-id');                     //seçili tıklanılan butonun 'data-id' attribute değerini alma
+            $.get(url, { categoryId: id }).done(function (data) {            //yukarıda belirtilen url'e get isteği gönder ve yanında categoryId parametresini(controller'ın aldığı parametre) gönder
+                placeHolderDiv.html(data);                          //placeholder Div içerisine controllerdan dönen _partialView'i yerleştir
+                placeHolderDiv.find('.modal').modal('show');        //placeHolderDiv elementini modal olarak aç
+            }).fail(() => {
+                toastr.error("İstek gönderilirken bir hata oluştu");
+            });
         });
     });
 });

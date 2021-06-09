@@ -155,8 +155,18 @@ namespace ProgrammerBlog.Services.Concrete
             return new DataResult<CategoryListDto>(ResultStatus.Error, "Kategori bulunamadı", null); //data:null
         }
 
-
-
+        public async Task<IDataResult<CategoryUpdateDto>> GetCategoryUpdateDto(int categoryId)
+        {
+            var result = await _unitOfWork.Categories.IsAnyAsync(c => c.Id == categoryId);
+            if (result)
+            {
+                var category = await _unitOfWork.Categories.GetAsync(c => c.Id == categoryId);
+                //category nesnemizi categoryUpdateDto'ya çeviren automapper işlemi
+                var categoryUpdateDto = _mapper.Map<CategoryUpdateDto>(category);
+                return new DataResult<CategoryUpdateDto>(ResultStatus.Success, categoryUpdateDto);
+            }
+            return new DataResult<CategoryUpdateDto>(ResultStatus.Error, "Böyle Bir kategori bulunamadı", null);
+        }
 
         public async Task<IResult> HardDelete(int categoryId)
         {
@@ -173,7 +183,8 @@ namespace ProgrammerBlog.Services.Concrete
 
         public async Task<IDataResult<CategoryDto>> Update(CategoryUpdateDto categoryUpdateDto, string modifierName)
         {
-            var category = _mapper.Map<Category>(categoryUpdateDto);
+            var oldCategory = await _unitOfWork.Categories.GetAsync(c => c.Id == categoryUpdateDto.Id);
+            var category = _mapper.Map<CategoryUpdateDto,Category>(categoryUpdateDto,oldCategory);
             category.ModifierName = modifierName;
             var updatedCategory = await _unitOfWork.Categories.UpdateAsync(category);
 
