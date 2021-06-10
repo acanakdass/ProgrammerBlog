@@ -48,7 +48,7 @@
                                                             <td>${category.ModifiedDate}</td>
                                                             <td>${category.ModifierName}</td>
                                                             <td style="padding:3px">
-                                                                <button id="btnUpdate" class="btn btn-primary btn-block btn-sm" data-id="${category.Id}"><i class="fas fa-edit"></i> Düzenle</button>
+                                                                <button id="btnEdit" class="btn btn-primary btn-block btn-sm" data-id="${category.Id}"><i class="fas fa-edit"></i> Düzenle</button>
                                                                 <button id="btnDelete" class="btn btn-danger btn-block btn-sm" data-id="${category.Id}"><i class="fas fa-minus-circle"></i> Sil</button>
                                                             </td>
                                                         </tr>`;
@@ -264,8 +264,11 @@
         }
     });
     //Datatable ends here
+
+
     $(function () {
         // Ajax Get : Getting the _CategoryAddPartial as Modal Form starts from here.
+
         //const url = '@Url.Action("Add","Category")';
         const url = '/Admin/Category/Add';
 
@@ -279,6 +282,10 @@
             });
         });
         // Ajax GET : Getting the _CategoryAddPartial as Modal Form ENDS here.
+
+
+
+
         // Ajax POST : Posting the form data as CategoryAddDto   starts from here.
         placeHolderDiv.on('click', '#btnSave', (e) => {
             e.preventDefault(); //submit olayı ile sayfanın yenilenmesini engelle
@@ -289,10 +296,10 @@
             //actionUrl'e (örn. CategoryController/Add) serialized form verisini post edet
             $.post(actionUrl, dataToSend).done((data) => {   //form post edildi ve isValid ise veritabanına eklendi
                 //data : controller'da post metodunda return edilen değerdir.
-                const categoryAddAjaxViewModel = jQuery.parseJSON(data); //data ile dönen categoryAddAjaxViewModel nesnesini
-                //jquery ile okuyabilmek için JSON'a parse etme.
+                const categoryAddAjaxViewModel = jQuery.parseJSON(data); //data ile controllerdan json olarak dönen categoryAddAjaxViewModel json nesnesini
+                //jquery ile okuyabilmek için JSON'dan objeye parse etme.
                 const newFormBody = $('.modal-body', categoryAddAjaxViewModel.CategoryAddPartial); //form isvalid :false ise terkar gösterilecek form body'si
-                //verilen CAtegoryAddPartial içerisindeki modal-body classlı elementi alır
+                //verilen CategoryAddPartial içerisindeki modal-body classlı elementi alır
                 placeHolderDiv.find('.modal-body').replaceWith(newFormBody); //önceki modal-body alanını yenisiyle değiştirir.
                 console.log(newFormBody.find('[name="IsValid"]').val());
                 const isFormValid = newFormBody.find('[name="IsValid"]').val() === 'True';
@@ -309,14 +316,15 @@
                                 <td>${categoryAddAjaxViewModel.CategoryDto.Category.ModifiedDate}</td>
                                 <td>${categoryAddAjaxViewModel.CategoryDto.Category.ModifierName}</td>
                                 <td style="padding:3px">
-                                        <button id="btnUpdate" class="btn btn-primary btn-block btn-sm"><i class="fas fa-edit" data-id="${category.Id}"></i> Düzenle</button>
+                                        <button id="btnEdit" class="btn btn-primary btn-block btn-sm"><i class="fas fa-edit" data-id="${categoryAddAjaxViewModel.CategoryDto.Category.Id}"></i> Düzenle</button>
                                         <button id="btnDelete" class="btn btn-danger btn-block btn-sm" data-id="${categoryAddAjaxViewModel.CategoryDto.Category.Id}"><i class="fas fa-minus-circle"></i> Sil</button>
                                 </td>
                             </tr>`;
                     const newTableRowObject = $(newTableRow); // string'i bir objeye çevirdik
                     $('#categoriesTable').append(newTableRowObject);
                     newTableRowObject.hide();
-                    newTableRowObject.fadeIn(500);
+                    //newTableRowObject.fadeIn(500);
+                    newTableRowObject.effect("highlight", { color: "#a5dc86" }, 2000);
                     Swal.fire(
                         'Başarılı!',
                         `${categoryAddAjaxViewModel.CategoryDto.Category.Name} adlı kategori başarıyla oluşturuldu.`,
@@ -333,6 +341,11 @@
         });
     });
     // Ajax POST : Posting the form data as CategoryAddDto ENDS here.
+
+
+
+
+
     // Ajax POST : Deleting a category starts from here.
     $(document).on('click', '#btnDelete', function () {
         //sweetAlert modal
@@ -387,10 +400,13 @@
         });
     });
 
+
+
+
     $(function () {
-        const url = '/Admin/Category/Update/';                  //istek yapılacak controller metodu
+        const url = '/Admin/Category/Update';                  //istek yapılacak controller metodu
         const placeHolderDiv = $('#modalPlaceHolder');
-        $(document).on('click', '#btnUpdate', function (e) {
+        $(document).on('click', '#btnEdit', function (e) {
             e.preventDefault();
             const id = $(this).attr('data-id');                     //seçili tıklanılan butonun 'data-id' attribute değerini alma
             $.get(url, { categoryId: id }).done(function (data) {            //yukarıda belirtilen url'e get isteği gönder ve yanında categoryId parametresini(controller'ın aldığı parametre) gönder
@@ -400,5 +416,68 @@
                 toastr.error("İstek gönderilirken bir hata oluştu");
             });
         });
+
+        // Ajax POST/ UPDATE : Updating a category starts from here.
+
+        placeHolderDiv.on('click', '#btnUpdate', function (e) {
+            e.preventDefault();
+            const form = $('#form-category-update'); //modal içindeki form'a erişme
+            const actionUrl = form.attr('action');   //form'un action'ını alır. örn. burdan gelecek değer : /Admin/Category/Add
+            const dataToSend = form.serialize(); //convert form to string(categoryUpdateDto)
+
+            Swal.fire({
+                title: 'Kategori Güncelle',
+                text: `Değişiklikleri kaydetmek istediğinize emin misiniz?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Değişiklikleri Kaydet',
+                cancelButtonText: 'Vazgeç'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    console.log("success");
+                    
+
+
+                    $.post(actionUrl, dataToSend).done((data) => {
+                        const categoryUpdateAjaxModel = jQuery.parseJSON(data); //controller'da json'a serialize edip, json tipinde gönderilen categoryUpdateAjaxModel json nesnesini objeye parse etme
+                        console.log("xxxxxxxxxxxxxxxxxxxxxxxxxx");
+                        const newFormBody = $('.modal-body', categoryUpdateAjaxModel.CategoryUpdatePartial); //categoryUpdateAjaxModel objesi içerisindeki CategoryUpdatePartial
+                        //stringi içerisindeki modal-body class'lı elementi seç
+                        placeHolderDiv.find('.modal-body').replaceWith(newFormBody); //placeHolderDiv içerisindeki modabody class'lı element ile newFormBody yer değişme
+                        const isValid = newFormBody.find('[name="IsValid"]').val() === 'True'
+                        //console.log(isValid);
+                        if (isValid) {
+                            placeHolderDiv.find('.modal').modal('hide');
+
+                                Swal.fire(
+                                    'Başarılı!',
+                                    `${categoryUpdateAjaxModel.CategoryDto.Message}`,
+                                    'success'
+                                );
+                            toastr.info(`${categoryUpdateAjaxModel.CategoryDto.Message}`, "Güncelleme İşlemi başarılı");
+                            $('#btnRefresh').click();
+
+
+                        }
+                    }).fail((res) => {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: 'Bir hata oluştu:(',
+                        });
+                        toastr.error(res);
+                    });
+
+
+
+                }
+            });
+
+            
+
+        })
+
     });
 });
