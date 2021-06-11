@@ -1,0 +1,84 @@
+﻿@model ArticleListDto
+
+@{
+    ViewBag.Title = "Makaleler Index";
+}
+
+@if (Model.ResultStatus == ResultStatus.Success)
+{
+    <div id="modalPlaceHolder" aria-hidden="true"></div> //form modal
+
+
+    <div class="card mt-3 mb-4">
+        <div class="card-header">
+            <i class="fas fa-table mr-1"></i>
+            Makaleler
+        </div>
+        <div class="card-body">
+            <div class="d-flex justify-content-center">
+                <div style="display:none" class="spinner-border m-2" role="status">
+                    <span class="sr-only">Yükleniyor...</span>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped" id="articlesTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Kategori Adı</th>
+                            <th>Kategori Açıklaması</th>
+                            <th>Aktif mi</th>
+                            <th>Silinmiş mi</th>
+                            @*<th>Not</th>*@
+                            <th>Oluşturulma Tarihi</th>
+                            <th>Oluşturulan Kullanıcı</th>
+                            <th>Son Düzenlenme Tarihi</th>
+                            <th>Son Düzenleyen Kullanıcı</th>
+                            <th>İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var categoryItem in Model.Articles)
+                        {
+                            <tr name="@categoryItem.Id">
+                                <td>@categoryItem.Id</td>
+                                <td>@categoryItem.Title</td>
+                                <td>@categoryItem.Content</td>
+                                <td>@categoryItem.IsActive</td>
+                                <td>@categoryItem.IsDeleted</td>
+                                @*<td>@categoryItem.Note</td>*@
+                                <td>@categoryItem.CreatedDate.ToShortDateString()</td>
+                                <td>@categoryItem.CreaterName</td>
+                                <td>@categoryItem.ModifiedDate</td>
+                                <td>@categoryItem.ModifierName</td>
+                                <td style="padding:3px">
+                                    <button id="btnEdit" data-id="@categoryItem.Id" class="btn btn-primary btn-block btn-sm"><i class="fas fa-edit"></i> Düzenle</button>
+                                    <button id="btnDelete" class="btn btn-danger btn-block btn-sm" data-id="@categoryItem.Id"><i class="fas fa-minus-circle"></i> Sil</button>
+                                </td>
+                            </tr>
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+}
+
+@if (Model.ResultStatus == ResultStatus.Error)
+{
+    <div class="alert alert-danger mt-4">
+        @Model.Message
+        <br />
+        Dashboard'a dönmek için <a class="alert-link" asp-area="Admin" asp-controller="Home" asp-action="Index">tıklayınız</a>
+    </div>
+
+}
+
+
+
+
+@section Scripts
+{
+    <script src="~/js/articleIndex.js" type="application/ecmascript"></script>   
+}
