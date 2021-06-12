@@ -1,0 +1,80 @@
+﻿@model UserListDto
+
+@{
+    ViewBag.Title = "Kategoriler Index";
+}
+
+@if (Model.ResultStatus == ResultStatus.Success)
+{
+    <div id="modalPlaceHolder" aria-hidden="true"></div> //form modal
+
+
+    <div class="card mt-3 mb-4">
+        <div class="card-header">
+            <i class="fas fa-table mr-1"></i>
+            Kullanıcılar
+        </div>
+        <div class="card-body">
+            <div class="d-flex justify-content-center">
+                <div style="display:none" class="spinner-border m-2" role="status">
+                    <span class="sr-only">Yükleniyor...</span>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped" id="usersTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Adı</th>
+                            <th>Soyadı</th>
+                            <th>Kullanıcı Adı</th>
+                            <th>E-Posta Adresi</th>
+                            <th>Telefon Numarası</th>
+                            <th>Fotoğraf</th>
+                            @*<th>Oluşturulma Tarihi</th>*@
+                            <th>İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var user in Model.Users)
+                        {
+                            <tr name="@user.Id">
+                                <td>@user.Id</td>
+                                <td>@user.FirstName</td>
+                                <td>@user.LastName</td>
+                                <td>@user.UserName</td>
+                                <td>@user.Email</td>
+                                <td>@user.PhoneNumber</td>
+                                <td>@user.Image</td>
+                                @*<td>@categoryItem.Note</td>*@
+                                <td style="padding:3px">
+                                    <button id="btnEdit" data-id="@user.Id" class="btn btn-primary btn-block btn-sm"><i class="fas fa-edit"></i> Düzenle</button>
+                                    <button id="btnDelete" class="btn btn-danger btn-block btn-sm" data-id="@user.Id"><i class="fas fa-minus-circle"></i> Sil</button>
+                                </td>
+                            </tr>
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+}
+
+@if (Model.ResultStatus == ResultStatus.Error)
+{
+    <div class="alert alert-danger mt-4">
+        @Model.Message
+        <br />
+        Dashboard'a dönmek için <a class="alert-link" asp-area="Admin" asp-controller="Home" asp-action="Index">tıklayınız</a>
+    </div>
+
+}
+
+
+
+
+@section Scripts
+{
+    <script src="~/js/userIndex.js" type="application/ecmascript"></script>   
+}

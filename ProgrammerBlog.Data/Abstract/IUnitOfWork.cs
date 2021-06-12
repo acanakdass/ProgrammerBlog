@@ -14,10 +14,6 @@ namespace ProgrammerBlog.Data.Abstract
 
         ICommentRepository Comments { get; }
         
-        IRoleRepository Roles { get; }
-
-        IUserRepository Users { get; }
-
         Task<int> SaveAsync();
     }
 }

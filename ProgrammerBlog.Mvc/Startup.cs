@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -34,8 +35,28 @@ namespace ProgrammerBlog.Mvc
             });
 
             //services.AddControllersWithViews().AddRazorRuntimeCompilation();
+            services.AddSession();
             services.AddAutoMapper(typeof(CategoryProfile), typeof(ArticleProfile)); //Derlenme esnasýnda automapper'ýn sýnýflarý taramasýný saðlar
-            services.LoadMyServices();
+            services.LoadMyServices();  //identity services etc involved
+            services.ConfigureApplicationCookie(options =>
+            {
+                options.LoginPath = new PathString("/Admin/User/Login");
+                options.LogoutPath = new PathString("/Admin/User/Logout");
+
+                options.Cookie = new CookieBuilder
+                {
+                    Name = "ProgrammerBlog",
+                    HttpOnly = true,   //güvenlik, cookie'lerin javacript ile eriþilmesini engeller, http üzerinde gerçekleþir
+                    SameSite = SameSiteMode.Strict  , //cookie'ler sadece bizim sitemiz üzerinden gelirse çalýþsýn
+                    SecurePolicy = CookieSecurePolicy.Always
+                };
+                options.SlidingExpiration = true; //(default)20 dakika sonra tekrar login olmak gerekir,
+                                                  // true ise request yapýldýðýnda süre sýfýrlanýr
+                options.ExpireTimeSpan = TimeSpan.FromMinutes(45);
+                options.AccessDeniedPath = new PathString("/Admin/User/AccessDenied");
+
+
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -53,10 +74,12 @@ namespace ProgrammerBlog.Mvc
                 app.UseHsts();
             }
             app.UseHttpsRedirection();
+            app.UseSession();
             app.UseStaticFiles();
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

@@ -13,4 +13,8 @@
     <ProjectReference Include="..\ProgrammerBlog.Services\ProgrammerBlog.Services.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\userImages\" />
+  </ItemGroup>
+
 </Project>

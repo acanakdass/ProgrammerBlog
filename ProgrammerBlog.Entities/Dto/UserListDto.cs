@@ -6,9 +6,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ProgrammerBlog.Data.Abstract
+namespace ProgrammerBlog.Entities.Dto
 {
-    public interface IRoleRepository : IEntityRepository<Role>
+    public class UserListDto: DtoGetBase
     {
+        public IList<User> Users { get; set; }
     }
 }
