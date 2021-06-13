@@ -11,8 +11,9 @@ using System.Threading.Tasks;
 
 namespace ProgrammerBlog.Entities.Dto
 {
-    public class UserAddDto{
-
+    public class UserUpdateDto{
+        [Required]
+        public int Id { get; set; }
 
         [DisplayName("Adı")]
         [Required(ErrorMessage = "{0} alanı boş bırakılmamalı.")]  // {0} display name(dinamik)
@@ -39,13 +40,6 @@ namespace ProgrammerBlog.Entities.Dto
         [MinLength(5, ErrorMessage = "{0} alanı {1} karakterden kısa olmamalı")] // {1} display name(min-length)
         [DataType(DataType.EmailAddress)]
         public string Email { get; set; }
-
-        [DisplayName("Şifre")]
-        [Required(ErrorMessage = "{0} alanı boş bırakılmamalı.")]  // {0} display name(dinamik)
-        [MaxLength(50, ErrorMessage = "{0} alanı {1} karakterden uzun olmamalı.")] // {1} display name(max-length)
-        [MinLength(5, ErrorMessage = "{0} alanı {1} karakterden kısa olmamalı")] // {1} display name(min-length)
-        [DataType(DataType.Password)]
-        public string Password { get; set; }
         
         [DisplayName("Telefon Numarası")]
         [Required(ErrorMessage = "{0} alanı boş bırakılmamalı.")]  // {0} display name(dinamik)
@@ -56,7 +50,6 @@ namespace ProgrammerBlog.Entities.Dto
 
         [DisplayName("Fotoğraf")]
         [DataType(DataType.Upload)]
-        [Required(ErrorMessage = "{0} alanı boş bırakılmamalı.")]  // {0} display name(dinamik)
         public IFormFile ImageFile { get; set; }
 
         [DisplayName("Fotoğraf Adı")]

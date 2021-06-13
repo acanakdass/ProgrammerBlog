@@ -301,7 +301,7 @@ $(document).ready(() => {
                 type: 'POST',
                 data: dataToSend,
                 processData: false,
-                contentType:false,
+                contentType: false,
 
                 success: (data) => {   //form post edildi ve isValid ise veritabanına eklendi
                     //data : controller'da post metodunda return edilen değerdir.
@@ -317,10 +317,10 @@ $(document).ready(() => {
                         $("#btnRefresh").click();
                         Swal.fire(
                             'Başarılı!',
-                            `${userAddAjaxViewModel.UserDto.User.Name} adlı kategori başarıyla oluşturuldu.`,
+                            `${userAddAjaxViewModel.UserDto.User.UserName} adlı kullanıcı başarıyla oluşturuldu.`,
                             'success'
                         );
-                        toastr.success(`${categoryAddAjaxViewModel.CategoryDto.Message}`, 'Başarılı İşlem!');
+                        toastr.success(`${userAddAjaxViewModel.UserDto.Message}`, 'Başarılı İşlem!');
                     } else {
                         $('#validationSummary > ul > li').each(function () {
                             let text = $(this).text();
@@ -348,13 +348,13 @@ $(document).ready(() => {
         const deletedTableRow = $(`[name="${id}"]`);
         const deletedRowName = deletedTableRow.find('td:eq(1)').text();
         Swal.fire({
-            title: 'Kategori Sil',
-            text: `${deletedRowName} adlı kategoriyi silmek istediğinize emin misiniz?`,
+            title: 'Kullanıcı Sil',
+            text: `${deletedRowName} adlı kullanıcıyı silmek istediğinize emin misiniz?`,
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
             cancelButtonColor: '#d33',
-            confirmButtonText: 'Kategoriyi Sil',
+            confirmButtonText: 'Kullanıcıyı Sil',
             cancelButtonText: 'Vazgeç'
         }).then((result) => {
             if (result.isConfirmed) {
@@ -362,27 +362,27 @@ $(document).ready(() => {
                 $.ajax({
                     type: 'POST',
                     dataType: 'json',
-                    data: { categoryId: id },
+                    data: { userId: id },
                     //url: '@Url.Action("Delete","Category")',
-                    url: '/Admin/Category/Delete',
+                    url: '/Admin/User/Delete',
                     success: function (data) { //data : IResult gelir
-                        const categoryDto = jQuery.parseJSON(data);
-                        console.log(data);
-                        if (categoryDto.ResultStatus === 0) {
+                        const userDto = jQuery.parseJSON(data);
+                        console.warn(data);
+                        if (userDto.ResultStatus === 0) {
                             console.log("successFiree");
                             Swal.fire(
                                 'Başarılı!',
-                                `${categoryDto.Category.Name} adlı kategori başarıyla silindi.`,
+                                `${userDto.User.UserName} adlı kullanıcı başarıyla silindi.`,
                                 'success'
                             );
-                            toastr.info(`${categoryDto.Category.Name} adlı kategori başarıyla silindi.`, "Silindi");
-                            deletedTableRow.fadeOut(1000);
+                            toastr.info(`${userDto.User.UserName} adlı kullanıcı başarıyla silindi.`, "Silindi");
+                            $('#usersTable').DataTable().row(deletedTableRow).remove().draw();
 
                         } else {
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Oops...',
-                                text: `${categoryDto.message}`,
+                                text: `${userDto.Message}`,
                             });
                         }
                     },
@@ -399,12 +399,13 @@ $(document).ready(() => {
 
 
     $(function () {
-        const url = '/Admin/Category/Update';                  //istek yapılacak controller metodu
+        const url = '/Admin/User/Update';                  //istek yapılacak controller metodu
         const placeHolderDiv = $('#modalPlaceHolder');
         $(document).on('click', '#btnEdit', function (e) {
             e.preventDefault();
             const id = $(this).attr('data-id');                     //seçili tıklanılan butonun 'data-id' attribute değerini alma
-            $.get(url, { categoryId: id }).done(function (data) {            //yukarıda belirtilen url'e get isteği gönder ve yanında categoryId parametresini(controller'ın aldığı parametre) gönder
+
+            $.get(url, { userId: id }).done(function (data) {            //yukarıda belirtilen url'e get isteği gönder ve yanında categoryId parametresini(controller'ın aldığı parametre) gönder
                 placeHolderDiv.html(data);                          //placeholder Div içerisine controllerdan dönen _partialView'i yerleştir
                 placeHolderDiv.find('.modal').modal('show');        //placeHolderDiv elementini modal olarak aç
             }).fail(() => {
@@ -416,12 +417,12 @@ $(document).ready(() => {
 
         placeHolderDiv.on('click', '#btnUpdate', function (e) {
             e.preventDefault();
-            const form = $('#form-category-update'); //modal içindeki form'a erişme
+            const form = $('#form-user-update'); //modal içindeki form'a erişme
             const actionUrl = form.attr('action');   //form'un action'ını alır. örn. burdan gelecek değer : /Admin/Category/Add
-            const dataToSend = form.serialize(); //convert form to string(categoryUpdateDto)
+            const dataToSend = new FormData(form.get(0));//convert form to string(categoryUpdateDto)
 
             Swal.fire({
-                title: 'Kategori Güncelle',
+                title: 'Kullanıcı Güncelle',
                 text: `Değişiklikleri kaydetmek istediğinize emin misiniz?`,
                 icon: 'warning',
                 showCancelButton: true,
@@ -432,41 +433,34 @@ $(document).ready(() => {
             }).then((result) => {
                 if (result.isConfirmed) {
                     console.log("success");
-
-
-
-                    $.post(actionUrl, dataToSend).done((data) => {
-                        const categoryUpdateAjaxModel = jQuery.parseJSON(data); //controller'da json'a serialize edip, json tipinde gönderilen categoryUpdateAjaxModel json nesnesini objeye parse etme
-                        console.log("xxxxxxxxxxxxxxxxxxxxxxxxxx");
-                        const newFormBody = $('.modal-body', categoryUpdateAjaxModel.CategoryUpdatePartial); //categoryUpdateAjaxModel objesi içerisindeki CategoryUpdatePartial
-                        //stringi içerisindeki modal-body class'lı elementi seç
-                        placeHolderDiv.find('.modal-body').replaceWith(newFormBody); //placeHolderDiv içerisindeki modabody class'lı element ile newFormBody yer değişme
-                        const isValid = newFormBody.find('[name="IsValid"]').val() === 'True'
-                        //console.log(isValid);
-                        if (isValid) {
-                            placeHolderDiv.find('.modal').modal('hide');
-
-                            Swal.fire(
-                                'Başarılı!',
-                                `${categoryUpdateAjaxModel.CategoryDto.Message}`,
-                                'success'
-                            );
-                            toastr.info(`${categoryUpdateAjaxModel.CategoryDto.Message}`, "Güncelleme İşlemi başarılı");
-                            $('#btnRefresh').click();
-
-
+                    $.ajax({
+                        url: actionUrl,
+                        type: 'POST',
+                        data: dataToSend,
+                        processData: false,
+                        contentType: false,
+                        success: function (data) {
+                            const userUpdateAjaxModel = jQuery.parseJSON(data); //controller'da json'a serialize edip, json tipinde gönderilen userUpdateAjaxModel json nesnesini objeye parse etme
+                            console.log("xxxxxxxxxxxxxxxxxxxxxxxxxx");
+                            const newFormBody = $('.modal-body', userUpdateAjaxModel.UserUpdatePartial); //categoryUpdateAjaxModel objesi içerisindeki CategoryUpdatePartial
+                            //stringi içerisindeki modal-body class'lı elementi seç
+                            placeHolderDiv.find('.modal-body').replaceWith(newFormBody); //placeHolderDiv içerisindeki modabody class'lı element ile newFormBody yer değişme
+                            const isValid = newFormBody.find('[name="IsValid"]').val() === 'True';
+                            if (isValid) {
+                                placeHolderDiv.find('.modal').modal('hide');
+                                toastr.success(`${userUpdateAjaxModel.UserDto.Message}`, "Güncelleme İşlemi başarılı");
+                                $('#btnRefresh').click();
+                                Swal.fire(
+                                    'Başarılı!',
+                                    `${userUpdateAjaxModel.UserDto.User.UserName} adlı kullanıcı başarıyla güncellendi.`,
+                                    'success'
+                                );
+                            }
+                        },
+                        error: function (error) {
+                            console.log(error);
                         }
-                    }).fail((res) => {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Oops...',
-                            text: 'Bir hata oluştu:(',
-                        });
-                        toastr.error(res);
                     });
-
-
-
                 }
             });
 

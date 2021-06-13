@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ProgrammerBlog.Services\ProgrammerBlog.Services.csproj" />
+    <ProjectReference Include="..\ProgrammerBlog.Shared\ProgrammerBlog.Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>
