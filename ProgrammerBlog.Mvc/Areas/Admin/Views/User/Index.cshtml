@@ -45,7 +45,9 @@
                                 <td>@user.UserName</td>
                                 <td>@user.Email</td>
                                 <td>@user.PhoneNumber</td>
-                                <td>@user.Image</td>
+                                <td>
+                                    <img src="~/userImages/@user.Image"width="70" alt="@user.UserName" />
+                                </td>
                                 @*<td>@categoryItem.Note</td>*@
                                 <td style="padding:3px">
                                     <button id="btnEdit" data-id="@user.Id" class="btn btn-primary btn-block btn-sm"><i class="fas fa-edit"></i> Düzenle</button>

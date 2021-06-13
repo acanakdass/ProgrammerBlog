@@ -56,6 +56,9 @@ namespace ProgrammerBlog.Entities.Dto
 
         [DisplayName("Fotoğraf")]
         [DataType(DataType.Upload)]
-        public IFormFile Image { get; set; }
+        public IFormFile ImageFile { get; set; }
+
+        [DisplayName("Fotoğraf Adı")]
+        public string Image { get; set; }
     }
 }

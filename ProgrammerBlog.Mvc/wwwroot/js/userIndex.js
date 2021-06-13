@@ -1,4 +1,5 @@
-﻿$(document).ready(() => {
+﻿
+$(document).ready(() => {
     $('#usersTable').DataTable({
         dom:
             "<'row'<'col-sm-3'l><'col-sm-6 text-center'B><'col-sm-3'f>>" +
@@ -24,40 +25,40 @@
                     $.ajax({
                         type: 'GET',
                         //url: '@Url.Action("GetNonDeletedCategories","Category")',
-                        url: '/Admin/Category/GetNonDeletedCategories',
+                        url: '/Admin/User/GetAllUsers',
                         contentType: "application/Json",
                         beforeSend: () => {
                             //ajax işlemi başlamadan hemen önce çalışacak kod bloğu
-                            $('#categoriesTable').hide();
+                            $('#usersTable').hide();
                             $('.spinner-border').show();
                         },
                         success: function (data) {
-                            const categoryListDto = jQuery.parseJSON(data);
-                            if (categoryListDto.ResultStatus === 0) {
+                            const userListDto = jQuery.parseJSON(data);
+                            if (userListDto.ResultStatus === 0) {
                                 let tableBody = "";
-                                $.each(categoryListDto.Categories.$values, function (index, category) {
-                                    tableBody += `<tr name="${category.Id}">
+                                $.each(userListDto.Users.$values, function (index, user) {
+                                    tableBody += `<tr name="${user.Id}">
 
-                                                            <td>${category.Id}</td>
-                                                            <td>${category.Name}</td>
-                                                            <td>${category.Description}</td>
-                                                            <td>${category.IsActive.toString()}</td>
-                                                            <td>${category.IsDeleted.toString()}</td>
-                                                            <td>${convertToShorterDate(category.CreatedDate)}</td>
-                                                            <td>${category.CreaterName}</td>
-                                                            <td>${category.ModifiedDate}</td>
-                                                            <td>${category.ModifierName}</td>
+                                                            <td>${user.Id}</td>
+                                                            <td>${user.FirstName}</td>
+                                                            <td>${user.LastName}</td>
+                                                            <td>${user.UserName}</td>
+                                                            <td>${user.Email}</td>
+                                                            <td>${user.PhoneNumber}</td>
+                                                            <td>
+                                                                <img src="/userImages/${user.Image}" width="70" alt="${user.UserName}" />
+                                                            </td>
                                                             <td style="padding:3px">
-                                                                <button id="btnEdit" class="btn btn-primary btn-block btn-sm" data-id="${category.Id}"><i class="fas fa-edit"></i> Düzenle</button>
-                                                                <button id="btnDelete" class="btn btn-danger btn-block btn-sm" data-id="${category.Id}"><i class="fas fa-minus-circle"></i> Sil</button>
+                                                                <button id="btnEdit" class="btn btn-primary btn-block btn-sm" data-id="${user.Id}"><i class="fas fa-edit"></i> Düzenle</button>
+                                                                <button id="btnDelete" class="btn btn-danger btn-block btn-sm" data-id="${user.Id}"><i class="fas fa-minus-circle"></i> Sil</button>
                                                             </td>
                                                         </tr>`;
                                 });
                                 $('.spinner-border').hide();
 
                                 //$('#categoriesTable > tbody').replaceWith(tableBody);
-                                $("#categoriesTable > tbody").html(tableBody);
-                                $('#categoriesTable').fadeIn(500);
+                                $("#usersTable > tbody").html(tableBody);
+                                $('#usersTable').fadeIn(500);
                             } else {
                                 toastr.error('Hata', 'İşlem Başarısız');
 
@@ -65,7 +66,7 @@
                         },
                         error: (err) => {
                             $('.spinner-border').hide();
-                            $('#categoriesTable').fadeIn(500);
+                            $('#usersTable').fadeIn(500);
                             toastr.error(`$(err.responseText)`, 'İşlem Başarısız');
 
                         }
@@ -291,53 +292,47 @@
             e.preventDefault(); //submit olayı ile sayfanın yenilenmesini engelle
             const form = $('#form-user-add');
             const actionUrl = form.attr('action');
-            const dataToSend = form.serialize();  //form'dan gelen veriyi categoryAddDto'ya çevir
+            const dataToSend = new FormData(form.get(0));
             //serialize() Herhangi bir argüman almayan bir metoddur ve asıl amacı string’e çevrilmiş ve url-encoded edilmiş text üretmektir.
-            //actionUrl'e (örn. CategoryController/Add) serialized form verisini post edet
-            $.post(actionUrl, dataToSend).done((data) => {   //form post edildi ve isValid ise veritabanına eklendi
-                //data : controller'da post metodunda return edilen değerdir.
-                const categoryAddAjaxViewModel = jQuery.parseJSON(data); //data ile controllerdan json olarak dönen categoryAddAjaxViewModel json nesnesini
-                //jquery ile okuyabilmek için JSON'dan objeye parse etme.
-                const newFormBody = $('.modal-body', categoryAddAjaxViewModel.CategoryAddPartial); //form isvalid :false ise terkar gösterilecek form body'si
-                //verilen CategoryAddPartial içerisindeki modal-body classlı elementi alır
-                placeHolderDiv.find('.modal-body').replaceWith(newFormBody); //önceki modal-body alanını yenisiyle değiştirir.
-                console.log(newFormBody.find('[name="IsValid"]').val());
-                const isFormValid = newFormBody.find('[name="IsValid"]').val() === 'True';
-                if (isFormValid) {
-                    placeHolderDiv.find('.modal').modal('hide');
-                    const newTableRow = `<tr name="${categoryAddAjaxViewModel.CategoryDto.Category.Id}">
-                                <td>${categoryAddAjaxViewModel.CategoryDto.Category.Id}</td>
-                                <td>${categoryAddAjaxViewModel.CategoryDto.Category.Name}</td>
-                                <td>${categoryAddAjaxViewModel.CategoryDto.Category.Description}</td>
-                                <td>${convertFirstLetterToUpperCase(categoryAddAjaxViewModel.CategoryDto.Category.IsActive.toString())}</td>
-                                <td>${convertFirstLetterToUpperCase(categoryAddAjaxViewModel.CategoryDto.Category.IsDeleted.toString())}</td>
-                                <td>${convertToShorterDate(categoryAddAjaxViewModel.CategoryDto.Category.CreatedDate)}</td>
-                                <td>${categoryAddAjaxViewModel.CategoryDto.Category.CreaterName}</td>
-                                <td>${categoryAddAjaxViewModel.CategoryDto.Category.ModifiedDate}</td>
-                                <td>${categoryAddAjaxViewModel.CategoryDto.Category.ModifierName}</td>
-                                <td style="padding:3px">
-                                        <button id="btnEdit" class="btn btn-primary btn-block btn-sm"><i class="fas fa-edit" data-id="${categoryAddAjaxViewModel.CategoryDto.Category.Id}"></i> Düzenle</button>
-                                        <button id="btnDelete" class="btn btn-danger btn-block btn-sm" data-id="${categoryAddAjaxViewModel.CategoryDto.Category.Id}"><i class="fas fa-minus-circle"></i> Sil</button>
-                                </td>
-                            </tr>`;
-                    const newTableRowObject = $(newTableRow); // string'i bir objeye çevirdik
-                    $('#categoriesTable').append(newTableRowObject);
-                    newTableRowObject.hide();
-                    //newTableRowObject.fadeIn(500);
-                    newTableRowObject.effect("highlight", { color: "#a5dc86" }, 2000);
-                    Swal.fire(
-                        'Başarılı!',
-                        `${categoryAddAjaxViewModel.CategoryDto.Category.Name} adlı kategori başarıyla oluşturuldu.`,
-                        'success'
-                    );
-                    toastr.success(`${categoryAddAjaxViewModel.CategoryDto.Message}`, 'Başarılı İşlem!');
-                } else {
-                    $('#validationSummary > ul > li').each(function () {
-                        let text = $(this).text();
-                        toastr.warning(text);
-                    });
+            //actionUrl'e (örn. CategoryController/Add) serialized form verisini post eder
+            $.ajax({
+
+                url: actionUrl,
+                type: 'POST',
+                data: dataToSend,
+                processData: false,
+                contentType:false,
+
+                success: (data) => {   //form post edildi ve isValid ise veritabanına eklendi
+                    //data : controller'da post metodunda return edilen değerdir.
+                    const userAddAjaxViewModel = jQuery.parseJSON(data); //data ile controllerdan json olarak dönen categoryAddAjaxViewModel json nesnesini
+                    //jquery ile okuyabilmek için JSON'dan objeye parse etme.
+                    const newFormBody = $('.modal-body', userAddAjaxViewModel.UserAddPartial); //form isvalid :false ise terkar gösterilecek form body'si
+                    //verilen CategoryAddPartial içerisindeki modal-body classlı elementi alır
+                    placeHolderDiv.find('.modal-body').replaceWith(newFormBody); //önceki modal-body alanını yenisiyle değiştirir.
+                    console.log(newFormBody.find('[name="IsValid"]').val());
+                    const isFormValid = newFormBody.find('[name="IsValid"]').val() === 'True';
+                    if (isFormValid) {
+                        placeHolderDiv.find('.modal').modal('hide');
+                        $("#btnRefresh").click();
+                        Swal.fire(
+                            'Başarılı!',
+                            `${userAddAjaxViewModel.UserDto.User.Name} adlı kategori başarıyla oluşturuldu.`,
+                            'success'
+                        );
+                        toastr.success(`${categoryAddAjaxViewModel.CategoryDto.Message}`, 'Başarılı İşlem!');
+                    } else {
+                        $('#validationSummary > ul > li').each(function () {
+                            let text = $(this).text();
+                            toastr.warning(text);
+                        });
+                    }
+                },
+                error: (err) => {
+                    console.log(err);
+                    toastr.error(err);
                 }
-            });
+            })
         });
     });
     // Ajax POST : Posting the form data as CategoryAddDto ENDS here.
@@ -437,7 +432,7 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     console.log("success");
-                    
+
 
 
                     $.post(actionUrl, dataToSend).done((data) => {
@@ -451,11 +446,11 @@
                         if (isValid) {
                             placeHolderDiv.find('.modal').modal('hide');
 
-                                Swal.fire(
-                                    'Başarılı!',
-                                    `${categoryUpdateAjaxModel.CategoryDto.Message}`,
-                                    'success'
-                                );
+                            Swal.fire(
+                                'Başarılı!',
+                                `${categoryUpdateAjaxModel.CategoryDto.Message}`,
+                                'success'
+                            );
                             toastr.info(`${categoryUpdateAjaxModel.CategoryDto.Message}`, "Güncelleme İşlemi başarılı");
                             $('#btnRefresh').click();
 
@@ -475,7 +470,7 @@
                 }
             });
 
-            
+
 
         })
 
