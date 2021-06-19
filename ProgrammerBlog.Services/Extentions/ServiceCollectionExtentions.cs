@@ -5,6 +5,8 @@ using ProgrammerBlog.Data.Concrete.EntityFramework.Context;
 using ProgrammerBlog.Entities.Concrete;
 using ProgrammerBlog.Services.Abstract;
 using ProgrammerBlog.Services.Concrete;
+using ProgrammerBlog.Services.Helpers.Abstract;
+using ProgrammerBlog.Services.Helpers.Concrete;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,7 +36,7 @@ namespace ProgrammerBlog.Services.Extentions
             serviceCollection.AddScoped<IUnitOfWork,UnitOfWork>();
             serviceCollection.AddScoped<ICategoryService,CategoryManager>();
             serviceCollection.AddScoped<IArticleService,ArticleManager>();
-
+            serviceCollection.AddScoped<IImageHelper, ImageHelper>();
             return serviceCollection;
         }
     }

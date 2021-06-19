@@ -8,8 +8,8 @@ using ProgrammerBlog.Entities.Concrete;
 using ProgrammerBlog.Entities.Dto;
 using ProgrammerBlog.Mvc.Areas.Admin.Models;
 using ProgrammerBlog.Services.Helper;
+using ProgrammerBlog.Services.Helpers.Abstract;
 using ProgrammerBlog.Shared.Utilities.Extentions;
-using ProgrammerBlog.Shared.Utilities.Helpers;
 using ProgrammerBlog.Shared.Utilities.Results.ComplexTypes;
 using System;
 using System.Collections.Generic;
@@ -28,12 +28,14 @@ namespace ProgrammerBlog.Mvc.Areas.Admin.Controllers
         private readonly UserManager<User> _userManager;
         private readonly IMapper _mapper;
         private readonly SignInManager<User> _signInManager;
+        private readonly IImageHelper _imageHelper;
 
-        public UserController(UserManager<User> userManager, IMapper mapper, SignInManager<User> signInManager)
+        public UserController(UserManager<User> userManager, IMapper mapper, SignInManager<User> signInManager, IImageHelper imageHelper)
         {
             _userManager = userManager;
             _mapper = mapper;
             _signInManager = signInManager;
+            _imageHelper = imageHelper;
         }
 
         [HttpGet]
@@ -138,7 +140,15 @@ namespace ProgrammerBlog.Mvc.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
-                userAddDto.Image = await ImageOps.ImageUpload(userAddDto.UserName, userAddDto.ImageFile); //ımage upload'dan dönen filename'i image'e atar.
+                var uploadedImageDtoResult = await _imageHelper.UploadUserImage(userAddDto.UserName, userAddDto.ImageFile); //ımage upload'dan dönen filename'i image'e atar.
+                if (uploadedImageDtoResult.ResultStatus == ResultStatus.Success)
+                {
+                    userAddDto.Image = uploadedImageDtoResult.Data.Fullname;
+                }
+                else
+                {
+                    userAddDto.Image = "userImages/defaultUser.png";
+                }
                 var user = _mapper.Map<User>(userAddDto); //userAddDto'yu User nesenesine çevir.
                 var result = await _userManager.CreateAsync(user, userAddDto.Password);
                 if (result.Succeeded)
@@ -227,17 +237,7 @@ namespace ProgrammerBlog.Mvc.Areas.Admin.Controllers
         }
 
 
-        [Authorize(Roles = "Admin,User")]
-        public async Task<string> ImageUpload(string userName, IFormFile imageFile)
-        {
-            return await ImageOps.ImageUpload(userName, imageFile);
-        }
-
-        [Authorize(Roles = "Admin,User")]
-        public async Task<bool> ImageDelete(string fileName)
-        {
-            return await ImageOps.DeleteImage(fileName);
-        }
+        
 
 
         [Authorize(Roles = "Admin")]
@@ -251,7 +251,15 @@ namespace ProgrammerBlog.Mvc.Areas.Admin.Controllers
                 bool isNewImageUploadSuceeded = false;
                 if (userUpdateDto.ImageFile != null)
                 {
-                    userUpdateDto.Image = await ImageUpload(userUpdateDto.UserName, userUpdateDto.ImageFile);
+                    var uploadedImageDtoResult = await _imageHelper.UploadUserImage(userUpdateDto.UserName, userUpdateDto.ImageFile); //ımage upload'dan dönen filename'i image'e atar.
+                    if (uploadedImageDtoResult.ResultStatus == ResultStatus.Success)
+                    {
+                        userUpdateDto.Image = uploadedImageDtoResult.Data.Fullname;
+                    }
+                    else
+                    {
+                        userUpdateDto.Image = "userImages/defaultUser.png";
+                    }
                     isNewImageUploadSuceeded = true;
                 }
                 var updatedUser = _mapper.Map<UserUpdateDto, User>(userUpdateDto, oldUser);  //userUpdateDto ve oldUser' harmanla ve updatedUser döndür
@@ -327,7 +335,15 @@ namespace ProgrammerBlog.Mvc.Areas.Admin.Controllers
                 if (userUpdateDto.ImageFile != null)
                 {
 
-                    userUpdateDto.Image = await ImageUpload(userUpdateDto.UserName, userUpdateDto.ImageFile);
+                    var uploadedImageDtoResult = await _imageHelper.UploadUserImage(userUpdateDto.UserName, userUpdateDto.ImageFile); //ımage upload'dan dönen filename'i image'e atar.
+                    if (uploadedImageDtoResult.ResultStatus == ResultStatus.Success)
+                    {
+                        userUpdateDto.Image = uploadedImageDtoResult.Data.Fullname;
+                    }
+                    else
+                    {
+                        userUpdateDto.Image = "userImages/defaultUser.png";
+                    }
                     if (oldUserImage != "defaultUser.png")
                         isNewImageUploadSuceeded = true;
                 }
@@ -336,10 +352,10 @@ namespace ProgrammerBlog.Mvc.Areas.Admin.Controllers
 
                 if (result.Succeeded)
                 {
-                    if (isNewImageUploadSuceeded)
-                    {
-                        await ImageOps.DeleteImage(oldUserImage);
-                    }
+                    //if (isNewImageUploadSuceeded)
+                    //{
+                    //    await ImageOps.DeleteImage(oldUserImage);
+                    //}
                     TempData.Add("SuccessMessage", $"{updatedUser.UserName} adlı kullanıcı başarıyla güncellendi");
                     return View(userUpdateDto);
                 }
@@ -381,6 +397,15 @@ namespace ProgrammerBlog.Mvc.Areas.Admin.Controllers
                         TempData.Add("SuccessMessage", "Şifreniz başarıyla güncellendi");
                         return View();
                     }
+                    else
+                    {
+                        foreach (var error in result.Errors)
+                        {
+                            ModelState.AddModelError("", error.Description);
+                        }
+                        return View(userResetPasswordDto);
+
+                    }
                 }
                 else
                 {
@@ -392,7 +417,6 @@ namespace ProgrammerBlog.Mvc.Areas.Admin.Controllers
             {
                 return View(userResetPasswordDto);
             }
-            return View();
         }
 
     }

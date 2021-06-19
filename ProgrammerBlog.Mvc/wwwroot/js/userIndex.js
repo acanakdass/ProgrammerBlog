@@ -46,7 +46,7 @@ $(document).ready(() => {
                                                             <td>${user.Email}</td>
                                                             <td>${user.PhoneNumber}</td>
                                                             <td>
-                                                                <img src="/userImages/${user.Image}" width="70" alt="${user.UserName}" />
+                                                                <img src="/img/${user.Image}" width="70" alt="${user.UserName}" />
                                                             </td>
                                                             <td style="padding:3px">
                                                                 <button id="btnEdit" class="btn btn-primary btn-block btn-sm" data-id="${user.Id}"><i class="fas fa-edit"></i> Düzenle</button>
