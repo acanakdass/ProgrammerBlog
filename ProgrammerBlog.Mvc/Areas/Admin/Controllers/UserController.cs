@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -25,13 +27,23 @@ namespace ProgrammerBlog.Mvc.Areas.Admin.Controllers
 
         private readonly UserManager<User> _userManager;
         private readonly IMapper _mapper;
+        private readonly SignInManager<User> _signInManager;
 
-        public UserController(UserManager<User> userManager, IMapper mapper)
+        public UserController(UserManager<User> userManager, IMapper mapper, SignInManager<User> signInManager)
         {
             _userManager = userManager;
             _mapper = mapper;
+            _signInManager = signInManager;
         }
 
+        [HttpGet]
+        public IActionResult AccessDenied()
+        {
+            return View();
+        }
+
+
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public async Task<IActionResult> Index()
         {
@@ -47,15 +59,64 @@ namespace ProgrammerBlog.Mvc.Areas.Admin.Controllers
         }
 
         [HttpGet]
+        public IActionResult Login()
+        {
+
+            return View("UserLogin");
+        }
+        [HttpPost]
+        public async Task<IActionResult> Login(UserLoginDto userLoginDto)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await _userManager.FindByNameAsync(userLoginDto.UserName);
+                if (user != null)
+                {
+
+                    var result = await _signInManager.PasswordSignInAsync(user, userLoginDto.Password, userLoginDto.RememberMe, false);  //üçüncü parametre:isPersestant => beni hatırla? => true?false
+                    //returns signInResult
+                    if (result.Succeeded)
+                    {
+                        return RedirectToAction("Index", "Home");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("", "E-posta veya şifreniz yanlış.Lütfen tekrar deneyiniz");
+                        return View("UserLogin");
+
+                    }
+                }
+                else
+                {
+                    ModelState.AddModelError("", "E-posta veya şifreniz yanlış.Lütfen tekrar deneyiniz");
+                    return View("UserLogin");
+                }
+            }
+            else
+            {
+                return View("UserLogin");
+            }
+        }
+
+        [Authorize]
+        [HttpGet]
+        public async Task<IActionResult> Logout()
+        {
+            await _signInManager.SignOutAsync();
+            return RedirectToAction("Index", "Home", new { Area = "" });
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpGet]
         public async Task<JsonResult> GetAllUsers()
         {
             var users = await _userManager.Users.ToListAsync();
             var userListDto = JsonSerializer.Serialize(new UserListDto
             {
-                Users=users,
-                ResultStatus=ResultStatus.Success
+                Users = users,
+                ResultStatus = ResultStatus.Success
             }, new JsonSerializerOptions
-            { 
+            {
                 ReferenceHandler = ReferenceHandler.Preserve
             });
             return Json(userListDto);
@@ -64,18 +125,20 @@ namespace ProgrammerBlog.Mvc.Areas.Admin.Controllers
 
         //User ADD
 
-
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public IActionResult Add()
         {
             return PartialView("_UserAddPartial");
         }
+        [Authorize(Roles = "Admin")]
+
         [HttpPost]
         public async Task<IActionResult> Add(UserAddDto userAddDto)
         {
             if (ModelState.IsValid)
             {
-                userAddDto.Image = await ImageOps.ImageUpload(userAddDto.UserName,userAddDto.ImageFile); //ımage upload'dan dönen filename'i image'e atar.
+                userAddDto.Image = await ImageOps.ImageUpload(userAddDto.UserName, userAddDto.ImageFile); //ımage upload'dan dönen filename'i image'e atar.
                 var user = _mapper.Map<User>(userAddDto); //userAddDto'yu User nesenesine çevir.
                 var result = await _userManager.CreateAsync(user, userAddDto.Password);
                 if (result.Succeeded)
@@ -120,6 +183,7 @@ namespace ProgrammerBlog.Mvc.Areas.Admin.Controllers
 
 
         //USER DELETE
+        [Authorize]
         public async Task<IActionResult> Delete(int userId)
         {
             var user = await _userManager.FindByIdAsync(userId.ToString());
@@ -128,18 +192,18 @@ namespace ProgrammerBlog.Mvc.Areas.Admin.Controllers
             {
                 var deletedUser = JsonSerializer.Serialize(new UserDto
                 {
-                    User=user,
-                    Message=$"{user.UserName} adlı kullanıcı başarıyla silindi",
-                    ResultStatus=ResultStatus.Success
+                    User = user,
+                    Message = $"{user.UserName} adlı kullanıcı başarıyla silindi",
+                    ResultStatus = ResultStatus.Success
                 });
                 return Json(deletedUser);
             }
             else
             {
-                string errorMessages ="";
+                string errorMessages = "";
                 foreach (var error in result.Errors)
                 {
-                    errorMessages+=$"{error.Description} \n";
+                    errorMessages += $"{error.Description} \n";
                 }
                 var deletedUserError = JsonSerializer.Serialize(new UserDto
                 {
@@ -152,6 +216,7 @@ namespace ProgrammerBlog.Mvc.Areas.Admin.Controllers
         }
 
         //USER UPDATE
+        [Authorize]
         [HttpGet]
         public async Task<PartialViewResult> Update(int userId)
         {
@@ -161,6 +226,21 @@ namespace ProgrammerBlog.Mvc.Areas.Admin.Controllers
             return PartialView("_UserUpdatePartial", userUpdateDto);
         }
 
+
+        [Authorize(Roles = "Admin,User")]
+        public async Task<string> ImageUpload(string userName, IFormFile imageFile)
+        {
+            return await ImageOps.ImageUpload(userName, imageFile);
+        }
+
+        [Authorize(Roles = "Admin,User")]
+        public async Task<bool> ImageDelete(string fileName)
+        {
+            return await ImageOps.DeleteImage(fileName);
+        }
+
+
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<JsonResult> Update(UserUpdateDto userUpdateDto)
         {
@@ -169,28 +249,28 @@ namespace ProgrammerBlog.Mvc.Areas.Admin.Controllers
                 var oldUser = await _userManager.FindByIdAsync(userUpdateDto.Id.ToString());
                 var oldUserImage = oldUser.Image;
                 bool isNewImageUploadSuceeded = false;
-                if (userUpdateDto.ImageFile !=null)
+                if (userUpdateDto.ImageFile != null)
                 {
-                    userUpdateDto.Image = await ImageOps.ImageUpload(userUpdateDto.UserName, userUpdateDto.ImageFile);
+                    userUpdateDto.Image = await ImageUpload(userUpdateDto.UserName, userUpdateDto.ImageFile);
                     isNewImageUploadSuceeded = true;
                 }
                 var updatedUser = _mapper.Map<UserUpdateDto, User>(userUpdateDto, oldUser);  //userUpdateDto ve oldUser' harmanla ve updatedUser döndür
                 var result = await _userManager.UpdateAsync(updatedUser);
-                
+
                 if (result.Succeeded)
                 {
                     if (isNewImageUploadSuceeded)
                     {
                         Console.WriteLine("test");
-                        ImageOps.DeleteImage(oldUserImage);
+                        await ImageOps.DeleteImage(oldUserImage);
                     }
                     var userUpdateAjaxViewModel = JsonSerializer.Serialize(new UserUpdateAjaxViewModel
                     {
-                        UserDto=new UserDto
+                        UserDto = new UserDto
                         {
-                            Message=$"{updatedUser.UserName} adlı kullanıcı başarıyla güncellendi",
-                            ResultStatus= ResultStatus.Success,
-                            User= updatedUser
+                            Message = $"{updatedUser.UserName} adlı kullanıcı başarıyla güncellendi",
+                            ResultStatus = ResultStatus.Success,
+                            User = updatedUser
                         },
                         UserUpdatePartial = await this.RenderViewToStringAsync("_UserUpdatePartial", userUpdateDto),
                     });
@@ -206,7 +286,7 @@ namespace ProgrammerBlog.Mvc.Areas.Admin.Controllers
 
                     var userUpdateErrorAjaxViewModel = JsonSerializer.Serialize(new UserUpdateAjaxViewModel
                     {
-                        UserUpdateDto=userUpdateDto,
+                        UserUpdateDto = userUpdateDto,
                         UserUpdatePartial = await this.RenderViewToStringAsync("_UserUpdatePartial", userUpdateDto),
                     });
                     Console.WriteLine("breakpoşnt error");
@@ -226,10 +306,94 @@ namespace ProgrammerBlog.Mvc.Areas.Admin.Controllers
             return Json(userUpdateErrorModelStateAjaxViewModel);
         }
 
+        [HttpGet]
+        [Authorize]
+        public async Task<ViewResult> ChangeUserDetails()
+        {
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+            var updateDto = _mapper.Map<UserUpdateDto>(user);
+            return View(updateDto);
+        }
 
+        [HttpPost]
+        [Authorize]
+        public async Task<ViewResult> ChangeUserDetails(UserUpdateDto userUpdateDto)
+        {
+            if (ModelState.IsValid)
+            {
+                var oldUser = await _userManager.GetUserAsync(HttpContext.User);
+                var oldUserImage = oldUser.Image;
+                bool isNewImageUploadSuceeded = false;
+                if (userUpdateDto.ImageFile != null)
+                {
 
+                    userUpdateDto.Image = await ImageUpload(userUpdateDto.UserName, userUpdateDto.ImageFile);
+                    if (oldUserImage != "defaultUser.png")
+                        isNewImageUploadSuceeded = true;
+                }
+                var updatedUser = _mapper.Map<UserUpdateDto, User>(userUpdateDto, oldUser);  //userUpdateDto ve oldUser' harmanla ve updatedUser döndür
+                var result = await _userManager.UpdateAsync(updatedUser);
 
-        
+                if (result.Succeeded)
+                {
+                    if (isNewImageUploadSuceeded)
+                    {
+                        await ImageOps.DeleteImage(oldUserImage);
+                    }
+                    TempData.Add("SuccessMessage", $"{updatedUser.UserName} adlı kullanıcı başarıyla güncellendi");
+                    return View(userUpdateDto);
+                }
+                else
+                {
+                    foreach (var error in result.Errors)
+                    {
+                        ModelState.AddModelError("", error.Description);
+                    }
+                    return View(userUpdateDto);
+                }
+            }
+            return View(userUpdateDto);
+        }
+        [Authorize]
+        [HttpGet]
+        public ViewResult ResetPassword()
+        {
+            return View();
+        }
+
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> ResetPassword(UserResetPasswordDto userResetPasswordDto)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await _userManager.GetUserAsync(HttpContext.User);
+                var isVerified = await _userManager.CheckPasswordAsync(user, userResetPasswordDto.CurrentPassword);
+                if (isVerified)
+                {
+                    var result = await _userManager.ChangePasswordAsync(user, userResetPasswordDto.CurrentPassword, userResetPasswordDto.NewPassword);
+                    if (result.Succeeded)
+                    {
+                        //securitystamp güncelleme
+                        await _userManager.UpdateSecurityStampAsync(user);
+                        await _signInManager.SignOutAsync();
+                        await _signInManager.PasswordSignInAsync(user, userResetPasswordDto.NewPassword, true, false);
+                        TempData.Add("SuccessMessage", "Şifreniz başarıyla güncellendi");
+                        return View();
+                    }
+                }
+                else
+                {
+                    ModelState.AddModelError("", "Lütfen girmiş olduğunuz şifreyi kontrol ediniz.");
+                    return View(userResetPasswordDto);
+                }
+            }
+            else
+            {
+                return View(userResetPasswordDto);
+            }
+            return View();
+        }
 
     }
 }

@@ -2,9 +2,12 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using ProgrammerBlog.Data.Concrete.EntityFramework.Context;
+using ProgrammerBlog.Entities.Concrete;
 using ProgrammerBlog.Services.AutoMapper.Profiles;
 using ProgrammerBlog.Services.Extentions;
 using System;
@@ -96,6 +99,7 @@ namespace ProgrammerBlog.Mvc
                 //    name: "default",
                 //    pattern: "{controller=Home}/{action=Index}/{id?}");
             });
+
         }
     }
 }

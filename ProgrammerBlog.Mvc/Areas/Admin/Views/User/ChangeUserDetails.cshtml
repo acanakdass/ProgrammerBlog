@@ -1,21 +1,19 @@
 ﻿@model UserUpdateDto
 
+@{ 
+    Layout = "_Layout";
+    ViewBag.Title = "Profili Düzenle";
+}
 
-
-<div class="modal fade" tabindex="-1"role="dialog" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title"><i class="fas fa-edit"></i> Kullanıcı Güncelle</h5>
-
-                <button type="button" class="close" data-dismiss="modal" aria-label="Kapat">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+<div class="row">
+    <div class="col-lg-6 offset-lg-3">
+        <div class="card mt-3">
+            <div class="card-header">
+                <h4 class="text-center"><i class="fas fa-edit"></i> Profili Düzenle</h4>
             </div>
-            <div class="modal-body">
-                <form asp-action="Update" id="form-user-update" method="post">
-                    <input type="hidden" name="IsValid" value="@ViewData.ModelState.IsValid.ToString()" />
-                    <div asp-validation-summary="All" class="text-danger" id="validationSummary" aria-hidden="true"></div>
+            <div class="card-body">
+                <form asp-action="ChangeUserDetails" enctype="multipart/form-data" id="form-user-update" method="post">
+                    <div asp-validation-summary="All" class="text-danger" id="validationSummary"></div>
 
                     <input type="hidden" asp-for="Id" />
 
@@ -47,16 +45,38 @@
                     </div>
 
                     <div class="form-group">
-                        <label asp-for="Image"></label>
-                        <input type="hidden" asp-for="Image"/>
-                        <img class="img-fluid img-thumbnail" src="~/userImages/@Model.Image" alt="@Model.Image" />
+                        @*<label asp-for="Image"></label>*@
+                        <input type="hidden" asp-for="Image" />
+                        <img width="200" class="img-fluid img-thumbnail" src="~/userImages/@Model.Image" alt="@Model.Image" />
                     </div>
                     <div class="form-group">
                         <input type="file" class="form-control-file" asp-for="ImageFile" />
                         <span class="text-danger" asp-validation-for="ImageFile"></span>
                     </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary btn-block">Değişiklikleri Kaydet</button>
+                        <a class="btn btn-danger btn-block" asp-area="Admin" asp-controller="User" asp-action="ChangeUserDetails">Vazgeç</a>
+                    </div>
 
                 </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" tabindex="-1"role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fas fa-edit"></i> Kullanıcı Güncelle</h5>
+
+                <button type="button" class="close" data-dismiss="modal" aria-label="Kapat">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-danger btn-block" data-bs-dismiss="modal"><i class="fas fa-times"></i> Vazgeç</button>

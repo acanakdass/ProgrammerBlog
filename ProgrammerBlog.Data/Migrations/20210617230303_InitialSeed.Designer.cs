@@ -10,8 +10,8 @@ using ProgrammerBlog.Data.Concrete.EntityFramework.Context;
 namespace ProgrammerBlog.Data.Migrations
 {
     [DbContext(typeof(ProgrammerBlogContext))]
-    [Migration("20210611204839_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20210617230303_InitialSeed")]
+    partial class InitialSeed
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -157,12 +157,12 @@ namespace ProgrammerBlog.Data.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedDate = new DateTime(2021, 6, 11, 23, 48, 38, 964, DateTimeKind.Local).AddTicks(6437),
+                            CreatedDate = new DateTime(2021, 6, 18, 2, 3, 3, 219, DateTimeKind.Local).AddTicks(1746),
                             CreaterName = "InitialCreate",
                             Description = "C# kategorisi",
                             IsActive = true,
                             IsDeleted = false,
-                            ModifiedDate = new DateTime(2021, 6, 11, 23, 48, 38, 964, DateTimeKind.Local).AddTicks(6938),
+                            ModifiedDate = new DateTime(2021, 6, 18, 2, 3, 3, 219, DateTimeKind.Local).AddTicks(2249),
                             ModifierName = "InitialCreate",
                             Name = "C#",
                             Note = "C# kategorisi"
@@ -170,12 +170,12 @@ namespace ProgrammerBlog.Data.Migrations
                         new
                         {
                             Id = 2,
-                            CreatedDate = new DateTime(2021, 6, 11, 23, 48, 38, 964, DateTimeKind.Local).AddTicks(8320),
+                            CreatedDate = new DateTime(2021, 6, 18, 2, 3, 3, 219, DateTimeKind.Local).AddTicks(3687),
                             CreaterName = "InitialCreate",
                             Description = "Javascript kategorisi",
                             IsActive = true,
                             IsDeleted = false,
-                            ModifiedDate = new DateTime(2021, 6, 11, 23, 48, 38, 964, DateTimeKind.Local).AddTicks(8321),
+                            ModifiedDate = new DateTime(2021, 6, 18, 2, 3, 3, 219, DateTimeKind.Local).AddTicks(3688),
                             ModifierName = "InitialCreate",
                             Name = "Javascript",
                             Note = "Javascript kategorisi"
@@ -183,12 +183,12 @@ namespace ProgrammerBlog.Data.Migrations
                         new
                         {
                             Id = 3,
-                            CreatedDate = new DateTime(2021, 6, 11, 23, 48, 38, 964, DateTimeKind.Local).AddTicks(8326),
+                            CreatedDate = new DateTime(2021, 6, 18, 2, 3, 3, 219, DateTimeKind.Local).AddTicks(3693),
                             CreaterName = "InitialCreate",
                             Description = "Asp .Net kategorisi",
                             IsActive = true,
                             IsDeleted = false,
-                            ModifiedDate = new DateTime(2021, 6, 11, 23, 48, 38, 964, DateTimeKind.Local).AddTicks(8327),
+                            ModifiedDate = new DateTime(2021, 6, 18, 2, 3, 3, 219, DateTimeKind.Local).AddTicks(3694),
                             ModifierName = "InitialCreate",
                             Name = "Asp .Net",
                             Note = "Asp .Net"

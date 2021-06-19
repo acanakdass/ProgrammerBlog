@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using ProgrammerBlog.Mvc.Models;
 using System;
@@ -9,7 +10,9 @@ using System.Threading.Tasks;
 
 namespace ProgrammerBlog.Mvc.Areas.Admin.Controllers
 {
+
     [Area("Admin")]
+    [Authorize(Roles = "Admin,Editor")]
     public class HomeController : Controller
     {
         public IActionResult Index()

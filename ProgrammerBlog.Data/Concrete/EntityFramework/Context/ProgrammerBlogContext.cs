@@ -20,6 +20,7 @@ namespace ProgrammerBlog.Data.Concrete.EntityFramework.Context
         {
             base.OnConfiguring(optionsBuilder
                 .UseSqlServer(@"Server=.\SQLEXPRESS01;Database=ProgrammerBlog;Trusted_Connection=True;Connect TimeOut=30;MultipleActiveResultSets=True;"));
+            optionsBuilder.EnableSensitiveDataLogging();
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

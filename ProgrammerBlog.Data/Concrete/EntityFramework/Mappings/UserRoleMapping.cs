@@ -18,6 +18,31 @@ namespace ProgrammerBlog.Data.Concrete.EntityFramework.Mappings
 
             // Maps to the AspNetUserRoles table
             builder.ToTable("AspNetUserRoles");
+
+            //var userRoleAdmin = new UserRole
+            //{
+            //    RoleId = 1,
+            //    UserId = 1
+            //};
+            //var userRoleEditor = new UserRole
+            //{
+            //    RoleId = 2,
+            //    UserId = 2
+            //};
+
+            //builder.HasData(userRoleAdmin, userRoleEditor);
+            //builder.HasData(
+            //     new UserRole
+            //     {
+            //         RoleId = 1,
+            //         UserId = 1
+            //     },
+            //     new UserRole
+            //     {
+            //         RoleId = 2,
+            //         UserId = 2
+            //     }
+            //    );
         }
     }
 }

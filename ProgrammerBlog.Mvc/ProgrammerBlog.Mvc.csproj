@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\userImages\" />
+    <Folder Include="NewFolder\" />
   </ItemGroup>
 
 </Project>

@@ -12,7 +12,7 @@ namespace ProgrammerBlog.Entities.Concrete
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        public string Image { get; set; }
+        public string Image { get; set; } = "defaultUser.png";
         public ICollection<Article> Articles { get; set; }
     }
 }

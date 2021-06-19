@@ -32,7 +32,7 @@ namespace ProgrammerBlog.Services.Helper
 
 
 
-        public static bool DeleteImage(string fileName)
+        public static async Task<bool> DeleteImage(string fileName)
         {
             fileName = "sdafsdffsd_323_35_45_20_13_6_2021.jpg";
             string fileToDelete = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\userImages", fileName);

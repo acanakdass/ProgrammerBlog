@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace ProgrammerBlog.Data.Migrations
 {
-    public partial class InitialCreate : Migration
+    public partial class InitialSeed : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -250,17 +250,17 @@ namespace ProgrammerBlog.Data.Migrations
             migrationBuilder.InsertData(
                 table: "Categories",
                 columns: new[] { "Id", "CreatedDate", "CreaterName", "Description", "IsActive", "IsDeleted", "ModifiedDate", "ModifierName", "Name", "Note" },
-                values: new object[] { 1, new DateTime(2021, 6, 11, 23, 48, 38, 964, DateTimeKind.Local).AddTicks(6437), "InitialCreate", "C# kategorisi", true, false, new DateTime(2021, 6, 11, 23, 48, 38, 964, DateTimeKind.Local).AddTicks(6938), "InitialCreate", "C#", "C# kategorisi" });
+                values: new object[] { 1, new DateTime(2021, 6, 18, 2, 3, 3, 219, DateTimeKind.Local).AddTicks(1746), "InitialCreate", "C# kategorisi", true, false, new DateTime(2021, 6, 18, 2, 3, 3, 219, DateTimeKind.Local).AddTicks(2249), "InitialCreate", "C#", "C# kategorisi" });
 
             migrationBuilder.InsertData(
                 table: "Categories",
                 columns: new[] { "Id", "CreatedDate", "CreaterName", "Description", "IsActive", "IsDeleted", "ModifiedDate", "ModifierName", "Name", "Note" },
-                values: new object[] { 2, new DateTime(2021, 6, 11, 23, 48, 38, 964, DateTimeKind.Local).AddTicks(8320), "InitialCreate", "Javascript kategorisi", true, false, new DateTime(2021, 6, 11, 23, 48, 38, 964, DateTimeKind.Local).AddTicks(8321), "InitialCreate", "Javascript", "Javascript kategorisi" });
+                values: new object[] { 2, new DateTime(2021, 6, 18, 2, 3, 3, 219, DateTimeKind.Local).AddTicks(3687), "InitialCreate", "Javascript kategorisi", true, false, new DateTime(2021, 6, 18, 2, 3, 3, 219, DateTimeKind.Local).AddTicks(3688), "InitialCreate", "Javascript", "Javascript kategorisi" });
 
             migrationBuilder.InsertData(
                 table: "Categories",
                 columns: new[] { "Id", "CreatedDate", "CreaterName", "Description", "IsActive", "IsDeleted", "ModifiedDate", "ModifierName", "Name", "Note" },
-                values: new object[] { 3, new DateTime(2021, 6, 11, 23, 48, 38, 964, DateTimeKind.Local).AddTicks(8326), "InitialCreate", "Asp .Net kategorisi", true, false, new DateTime(2021, 6, 11, 23, 48, 38, 964, DateTimeKind.Local).AddTicks(8327), "InitialCreate", "Asp .Net", "Asp .Net" });
+                values: new object[] { 3, new DateTime(2021, 6, 18, 2, 3, 3, 219, DateTimeKind.Local).AddTicks(3693), "InitialCreate", "Asp .Net kategorisi", true, false, new DateTime(2021, 6, 18, 2, 3, 3, 219, DateTimeKind.Local).AddTicks(3694), "InitialCreate", "Asp .Net", "Asp .Net" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Articles_CategoryId",

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using ProgrammerBlog.Entities.Dto;
 using ProgrammerBlog.Mvc.Areas.Admin.Models;
 using ProgrammerBlog.Services.Abstract;
@@ -11,6 +12,7 @@ using System.Threading.Tasks;
 namespace ProgrammerBlog.Mvc.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = "Admin,Editor")]
     public class CategoryController : Controller
     {
         private readonly ICategoryService _categoryService;
@@ -20,6 +22,7 @@ namespace ProgrammerBlog.Mvc.Areas.Admin.Controllers
             this._categoryService = categoryService;
         }
 
+        
         public async Task<IActionResult> Index()
         {
             var result = await _categoryService.GetAllNonDeleted();
