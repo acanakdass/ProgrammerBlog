@@ -40,14 +40,14 @@ namespace ProgrammerBlog.Data.Concrete.EntityFramework.Mappings
 
             //var adminRole = new Role
             //{
-            //    Id = 1319,
+            //    Id = 1,
             //    Name = "Admin",
             //    NormalizedName = "ADMIN",
             //    ConcurrencyStamp = Guid.NewGuid().ToString()
             //};
             //var editorRole = new Role
             //{
-            //    Id = 1316,
+            //    Id = 2,
             //    Name = "Editor",
             //    NormalizedName = "EDITOR",
             //    ConcurrencyStamp = Guid.NewGuid().ToString()

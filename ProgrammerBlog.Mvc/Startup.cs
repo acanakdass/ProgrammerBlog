@@ -40,7 +40,11 @@ namespace ProgrammerBlog.Mvc
             //services.AddControllersWithViews().AddRazorRuntimeCompilation();
             services.AddSession();
             services.AddAutoMapper(typeof(CategoryProfile), typeof(ArticleProfile), typeof(UserProfile)); //Derlenme esnasýnda automapper'ýn sýnýflarý taramasýný saðlar
-            services.LoadMyServices();  //identity services etc involved
+            
+            
+            services.LoadMyServices(connectionString:Configuration.GetConnectionString("LocalSqlServer"));  //identity services etc involved
+            
+            
             services.ConfigureApplicationCookie(options =>
             {
                 options.LoginPath = new PathString("/Admin/User/Login");

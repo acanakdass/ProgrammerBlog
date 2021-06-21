@@ -16,13 +16,17 @@ namespace ProgrammerBlog.Data.Concrete.EntityFramework.Context
         public DbSet<Category> Categories { get; set; }
         public DbSet<Comment> Comments { get; set; }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            base.OnConfiguring(optionsBuilder
-                .UseSqlServer(@"Server=.\SQLEXPRESS01;Database=ProgrammerBlog;Trusted_Connection=True;Connect TimeOut=30;MultipleActiveResultSets=True;"));
-            optionsBuilder.EnableSensitiveDataLogging();
-        }
+        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        //{
+        //    base.OnConfiguring(optionsBuilder
+        //        .UseSqlServer(@"Server=.\SQLEXPRESS01;Database=ProgrammerBlog;Trusted_Connection=True;Connect TimeOut=30;MultipleActiveResultSets=True;"));
+        //    optionsBuilder.EnableSensitiveDataLogging();
+        //}
 
+        public ProgrammerBlogContext(DbContextOptions<ProgrammerBlogContext> options): base(options)
+        {
+
+        }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             //Mappings işlemlerini context'e uygulama

@@ -3,6 +3,7 @@ using ProgrammerBlog.Data.Abstract;
 using ProgrammerBlog.Entities.Concrete;
 using ProgrammerBlog.Entities.Dto;
 using ProgrammerBlog.Services.Abstract;
+using ProgrammerBlog.Services.Utilities;
 using ProgrammerBlog.Shared.Utilities.Results.Abstract;
 using ProgrammerBlog.Shared.Utilities.Results.ComplexTypes;
 using ProgrammerBlog.Shared.Utilities.Results.Concrete;
@@ -37,7 +38,7 @@ namespace ProgrammerBlog.Services.Concrete
                     ResultStatus = ResultStatus.Success
                 });
             }
-            return new DataResult<ArticleDto>(ResultStatus.Error, "Böyle bir makale bulunamadı.", null);
+            return new DataResult<ArticleDto>(ResultStatus.Error, Messages.ArticleMessages.NotFound(isPlural:false), null);
 
         }
 
@@ -53,7 +54,7 @@ namespace ProgrammerBlog.Services.Concrete
                 };
                 return new DataResult<ArticleListDto>(ResultStatus.Success, articleListDto);
             }
-            return new DataResult<ArticleListDto>(ResultStatus.Error, "Makale Bulunamadı", null);
+            return new DataResult<ArticleListDto>(ResultStatus.Error, Messages.ArticleMessages.NotFound(isPlural: true), null);
         }
 
         public async Task<IDataResult<ArticleListDto>> GetAllByCategory(int categoryId)
@@ -72,9 +73,9 @@ namespace ProgrammerBlog.Services.Concrete
                     };
                     return new DataResult<ArticleListDto>(ResultStatus.Success, articleListDto);
                 }
-                return new DataResult<ArticleListDto>(ResultStatus.Error, "Makale Bulunamadı", null);
+                return new DataResult<ArticleListDto>(ResultStatus.Error, Messages.ArticleMessages.NotFound(isPlural: true), null);
             }
-            return new DataResult<ArticleListDto>(ResultStatus.Error, "Böyle bir kategori Bulunamadı", null);
+            return new DataResult<ArticleListDto>(ResultStatus.Error, Messages.CategoryMessages.NotFound(isPlural: false), null);
         }
 
         public async Task<IDataResult<ArticleListDto>> GetAllNonDeleted()
@@ -89,7 +90,7 @@ namespace ProgrammerBlog.Services.Concrete
                 };
                 return new DataResult<ArticleListDto>(ResultStatus.Success, articleListDto);
             }
-            return new DataResult<ArticleListDto>(ResultStatus.Error, "Makale Bulunamadı", null);
+            return new DataResult<ArticleListDto>(ResultStatus.Error, Messages.ArticleMessages.NotFound(isPlural: true), null);
         }
 
         public async Task<IDataResult<ArticleListDto>> GetAllNonDeletedAndActive()
@@ -104,7 +105,7 @@ namespace ProgrammerBlog.Services.Concrete
                 };
                 return new DataResult<ArticleListDto>(ResultStatus.Success, articleListDto);
             }
-            return new DataResult<ArticleListDto>(ResultStatus.Error, "Makale Bulunamadı", null);
+            return new DataResult<ArticleListDto>(ResultStatus.Error, Messages.ArticleMessages.NotFound(isPlural: true), null);
         }
 
         public async Task<IResult> Add(ArticleAddDto articleAddDto, string creatorName)
@@ -117,7 +118,7 @@ namespace ProgrammerBlog.Services.Concrete
 
             await _unitOfWork.Articles.AddAsync(article);
             await _unitOfWork.SaveAsync();
-            return new Result(ResultStatus.Success, $"{articleAddDto.Title} başlıklı makale başarıyla eklendi.");
+            return new Result(ResultStatus.Success, Messages.ArticleMessages.Added(articleTitle: article.Title));
         }
 
         public async Task<IResult> Delete(int articleId, string modifierName)
@@ -131,9 +132,9 @@ namespace ProgrammerBlog.Services.Concrete
                 await _unitOfWork.Articles.UpdateAsync(article);
                 await _unitOfWork.SaveAsync();
 
-                return new Result(ResultStatus.Success, $"{article.Title} başlıklı makale başarıyla silindi.");
+                return new Result(ResultStatus.Success, Messages.ArticleMessages.Deleted(articleTitle: article.Title));
             }
-            return new DataResult<ArticleListDto>(ResultStatus.Error, "Makale Bulunamadı", null);
+            return new DataResult<ArticleListDto>(ResultStatus.Error, Messages.ArticleMessages.NotFound(isPlural: false), null);
 
         }
 
@@ -147,9 +148,9 @@ namespace ProgrammerBlog.Services.Concrete
                 await _unitOfWork.SaveAsync();
 
 
-                return new Result(ResultStatus.Success, $"{article.Title} başlıklı makale başarıyla kalıcı olarak silindi.");
+                return new Result(ResultStatus.Success, Messages.ArticleMessages.HardDeleted(articleTitle: article.Title));
             }
-            return new DataResult<ArticleListDto>(ResultStatus.Error, "Makale Bulunamadı", null);
+            return new DataResult<ArticleListDto>(ResultStatus.Error, Messages.ArticleMessages.NotFound(isPlural: false), null);
 
         }
 
@@ -160,7 +161,7 @@ namespace ProgrammerBlog.Services.Concrete
             await _unitOfWork.Articles.UpdateAsync(article);
             await _unitOfWork.SaveAsync();
 
-            return new Result(ResultStatus.Success, $"{articleUpdateDto.Title} başlıklı makale başarıyla güncellendi.");
+            return new Result(ResultStatus.Success, Messages.ArticleMessages.Updated(articleTitle:article.Title));
         }
     }
 }

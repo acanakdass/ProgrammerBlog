@@ -7,7 +7,6 @@ using Microsoft.EntityFrameworkCore;
 using ProgrammerBlog.Entities.Concrete;
 using ProgrammerBlog.Entities.Dto;
 using ProgrammerBlog.Mvc.Areas.Admin.Models;
-using ProgrammerBlog.Services.Helper;
 using ProgrammerBlog.Services.Helpers.Abstract;
 using ProgrammerBlog.Shared.Utilities.Extentions;
 using ProgrammerBlog.Shared.Utilities.Results.ComplexTypes;
@@ -237,7 +236,7 @@ namespace ProgrammerBlog.Mvc.Areas.Admin.Controllers
         }
 
 
-        
+
 
 
         [Authorize(Roles = "Admin")]
@@ -247,7 +246,7 @@ namespace ProgrammerBlog.Mvc.Areas.Admin.Controllers
             if (ModelState.IsValid)
             {
                 var oldUser = await _userManager.FindByIdAsync(userUpdateDto.Id.ToString());
-                var oldUserImage = oldUser.Image;
+                var oldUserImageName = oldUser.Image;
                 bool isNewImageUploadSuceeded = false;
                 if (userUpdateDto.ImageFile != null)
                 {
@@ -260,7 +259,8 @@ namespace ProgrammerBlog.Mvc.Areas.Admin.Controllers
                     {
                         userUpdateDto.Image = "userImages/defaultUser.png";
                     }
-                    isNewImageUploadSuceeded = true;
+                    if (oldUserImageName != "userImages/defaultUser.png")
+                        isNewImageUploadSuceeded = true;
                 }
                 var updatedUser = _mapper.Map<UserUpdateDto, User>(userUpdateDto, oldUser);  //userUpdateDto ve oldUser' harmanla ve updatedUser döndür
                 var result = await _userManager.UpdateAsync(updatedUser);
@@ -269,8 +269,7 @@ namespace ProgrammerBlog.Mvc.Areas.Admin.Controllers
                 {
                     if (isNewImageUploadSuceeded)
                     {
-                        Console.WriteLine("test");
-                        await ImageOps.DeleteImage(oldUserImage);
+                        _imageHelper.DeleteUserImage(oldUserImageName);
                     }
                     var userUpdateAjaxViewModel = JsonSerializer.Serialize(new UserUpdateAjaxViewModel
                     {
@@ -330,7 +329,7 @@ namespace ProgrammerBlog.Mvc.Areas.Admin.Controllers
             if (ModelState.IsValid)
             {
                 var oldUser = await _userManager.GetUserAsync(HttpContext.User);
-                var oldUserImage = oldUser.Image;
+                var oldUserImageName = oldUser.Image;
                 bool isNewImageUploadSuceeded = false;
                 if (userUpdateDto.ImageFile != null)
                 {
@@ -344,18 +343,20 @@ namespace ProgrammerBlog.Mvc.Areas.Admin.Controllers
                     {
                         userUpdateDto.Image = "userImages/defaultUser.png";
                     }
-                    if (oldUserImage != "defaultUser.png")
+                    if (oldUserImageName != "userImages/defaultUser.png")
+                    {
                         isNewImageUploadSuceeded = true;
+                    }
                 }
                 var updatedUser = _mapper.Map<UserUpdateDto, User>(userUpdateDto, oldUser);  //userUpdateDto ve oldUser' harmanla ve updatedUser döndür
                 var result = await _userManager.UpdateAsync(updatedUser);
 
                 if (result.Succeeded)
                 {
-                    //if (isNewImageUploadSuceeded)
-                    //{
-                    //    await ImageOps.DeleteImage(oldUserImage);
-                    //}
+                    if (isNewImageUploadSuceeded)
+                    {
+                        _imageHelper.DeleteUserImage(oldUserImageName);
+                    }
                     TempData.Add("SuccessMessage", $"{updatedUser.UserName} adlı kullanıcı başarıyla güncellendi");
                     return View(userUpdateDto);
                 }

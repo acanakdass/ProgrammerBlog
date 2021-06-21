@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using ProgrammerBlog.Data.Abstract;
 using ProgrammerBlog.Data.Concrete;
 using ProgrammerBlog.Data.Concrete.EntityFramework.Context;
@@ -17,9 +18,9 @@ namespace ProgrammerBlog.Services.Extentions
 {
     public static class ServiceCollectionExtentions
     {
-        public static IServiceCollection LoadMyServices(this IServiceCollection serviceCollection)
+        public static IServiceCollection LoadMyServices(this IServiceCollection serviceCollection,string connectionString)
         {
-            serviceCollection.AddDbContext<ProgrammerBlogContext>();
+            serviceCollection.AddDbContext<ProgrammerBlogContext>(options=>options.UseSqlServer(connectionString));
             serviceCollection.AddIdentity<User, Role>(options=> {
                 options.Password.RequireDigit = false;
                 options.Password.RequireUppercase = false;//şifrede büyük harf olmalı
@@ -32,7 +33,7 @@ namespace ProgrammerBlog.Services.Extentions
 
             }).AddEntityFrameworkStores<ProgrammerBlogContext>();
 
-
+            //Dependency Injections
             serviceCollection.AddScoped<IUnitOfWork,UnitOfWork>();
             serviceCollection.AddScoped<ICategoryService,CategoryManager>();
             serviceCollection.AddScoped<IArticleService,ArticleManager>();

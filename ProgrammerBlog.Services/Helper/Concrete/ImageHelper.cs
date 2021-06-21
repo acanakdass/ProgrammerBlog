@@ -17,7 +17,30 @@ namespace ProgrammerBlog.Services.Helpers.Concrete
     {
         private readonly string imgFolder = "img";
 
-        public async Task<IDataResult<UploadedImageDto>> UploadUserImage(string userName, IFormFile imageFile, string folderName="userImages")
+        public IDataResult<ImageDeletedDto> DeleteUserImage(string imageName)
+        {
+            
+            var fileToDelete = Path.Combine(Directory.GetCurrentDirectory(), $"wwwroot/{imgFolder}/", imageName);
+            if (System.IO.File.Exists(fileToDelete))
+            {
+                var fileInfo = new FileInfo(fileToDelete);
+                var imageDeletedDto = new ImageDeletedDto
+                {
+                    Fullname = imageName,
+                    Extension = fileInfo.Extension,
+                    Path = fileInfo.FullName,
+                    Size = fileInfo.Length
+                };
+                System.IO.File.Delete(fileToDelete);
+                return new DataResult<ImageDeletedDto>(ResultStatus.Success, imageDeletedDto);
+            }
+            else
+            {
+                return new DataResult<ImageDeletedDto>(ResultStatus.Error, "Böyle bir dosya bulunamadı", null);
+            }
+        }
+
+        public async Task<IDataResult<ImageUploadedDto>> UploadUserImage(string userName, IFormFile imageFile, string folderName="userImages")
         {
             if (!Directory.Exists($"wwwroot/{imgFolder}/{folderName}"))
             {
@@ -34,7 +57,7 @@ namespace ProgrammerBlog.Services.Helpers.Concrete
                 await imageFile.CopyToAsync(stream);
             }
 
-            var imageUploadedDto = new UploadedImageDto
+            var imageUploadedDto = new ImageUploadedDto
             {
                 Fullname = $"{folderName}/{newFileName}",
                 Oldname = oldfileName,
@@ -42,7 +65,7 @@ namespace ProgrammerBlog.Services.Helpers.Concrete
                 Path = path,
                 Size = imageFile.Length
             };
-            return new DataResult<UploadedImageDto>(
+            return new DataResult<ImageUploadedDto>(
                 ResultStatus.Success,
                 $"{userName} adlı kullanıcı fotoğrafı başarıyla yüklendi",
                 imageUploadedDto

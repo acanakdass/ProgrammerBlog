@@ -11,6 +11,7 @@ namespace ProgrammerBlog.Services.Helpers.Abstract
 {
     public interface IImageHelper
     {
-        Task<IDataResult<UploadedImageDto>> UploadUserImage(string userName, IFormFile imageFile, string folderName = "userImages");
+        Task<IDataResult<ImageUploadedDto>> UploadUserImage(string userName, IFormFile imageFile, string folderName = "userImages");
+        IDataResult<ImageDeletedDto> DeleteUserImage(string imageName);
     }
 }
