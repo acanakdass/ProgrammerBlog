@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ProgrammerBlog.Data.Concrete.EntityFramework.Context;
 
 namespace ProgrammerBlog.Data.Migrations
 {
     [DbContext(typeof(ProgrammerBlogContext))]
-    partial class ProgrammerBlogContextModelSnapshot : ModelSnapshot
+    [Migration("20210621220605_SeedArticles")]
+    partial class SeedArticles
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
