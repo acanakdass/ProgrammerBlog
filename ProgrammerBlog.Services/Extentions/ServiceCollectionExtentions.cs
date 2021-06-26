@@ -38,6 +38,7 @@ namespace ProgrammerBlog.Services.Extentions
             serviceCollection.AddScoped<ICategoryService,CategoryManager>();
             serviceCollection.AddScoped<IArticleService,ArticleManager>();
             serviceCollection.AddScoped<IImageHelper, ImageHelper>();
+            serviceCollection.AddScoped<ICommentService, CommentManager>();
             return serviceCollection;
         }
     }

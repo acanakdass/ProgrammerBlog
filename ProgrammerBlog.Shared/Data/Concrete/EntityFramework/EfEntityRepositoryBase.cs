@@ -24,9 +24,17 @@ namespace ProgrammerBlog.Shared.Data.Concrete.EntityFramework
             return entity;
         }
 
-        public async Task<int> CountAsync(Expression<Func<TEntity, bool>> predicate)
+        public async Task<int> CountAsync(Expression<Func<TEntity, bool>> predicate = null)
         {
-            return await _context.Set<TEntity>().CountAsync(predicate);
+            if (predicate != null)
+            {
+                return await _context.Set<TEntity>().CountAsync(predicate);
+            }
+            else
+            {
+                return await _context.Set<TEntity>().CountAsync();
+
+            }
         }
 
         public async Task DeleteAsync(TEntity entity)
@@ -58,8 +66,8 @@ namespace ProgrammerBlog.Shared.Data.Concrete.EntityFramework
         public async Task<TEntity> GetAsync(Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, object>>[] includeProperties)
         {
             IQueryable<TEntity> query = _context.Set<TEntity>();
-            
-                query = query.Where(predicate);
+
+            query = query.Where(predicate);
             if (includeProperties.Any())  //includedProperties içerisinde herhangi bir değer varsa: 
             {
                 foreach (var item in includeProperties)

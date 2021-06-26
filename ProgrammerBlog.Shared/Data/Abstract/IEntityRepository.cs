@@ -22,6 +22,6 @@ namespace ProgrammerBlog.Shared.Entities.Abstract
 
         Task<bool> IsAnyAsync(Expression<Func<Type, bool>> predicate);
 
-        Task<int> CountAsync(Expression<Func<Type, bool>> predicate);
+        Task<int> CountAsync(Expression<Func<Type, bool>> predicate =null);
     }
 }

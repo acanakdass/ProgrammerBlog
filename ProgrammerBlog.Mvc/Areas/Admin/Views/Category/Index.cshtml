@@ -1,8 +1,13 @@
 ﻿@model CategoryListDto
 
 @{
-    ViewBag.Title = "Kategoriler Index";
+    ViewBag.Title = "Kategoriler";
 }
+
+<ol class="breadcrumb mb-2 mt-2">
+    <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Category" asp-action="Index">Admin</a></li>
+    <li class="breadcrumb-item active"><a asp-area="Admin" asp-controller="Home" asp-action="Index">Kategoriler</a></li>
+</ol>
 
 @if (Model.ResultStatus == ResultStatus.Success)
 {
@@ -80,5 +85,5 @@
 
 @section Scripts
 {
-    <script src="~/js/categoryIndex.js" type="application/ecmascript"></script>   
+    <script src="~/AdminLTE/js/categoryIndex.js" type="application/ecmascript"></script>   
 }

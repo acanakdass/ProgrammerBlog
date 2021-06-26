@@ -24,7 +24,7 @@ namespace ProgrammerBlog.Data.Concrete
 
         public IArticleRepository Articles => _articleRepository ?? new EfArticleRepository(_context);
         //IArticle Repository istendiğinde, efArticleRepository gönderilir
-        //Eğer null ise new'lenerek gönderilir ve _context parametresi verilir
+        //Eğer null ise new'lenerek gönderilir ve _context param etresi verilir
 
         public ICategoryRepository Categories => _categoryRepository ?? new EfCategoryRepository(_context);
 

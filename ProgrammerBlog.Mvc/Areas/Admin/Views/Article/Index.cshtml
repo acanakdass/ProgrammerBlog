@@ -1,8 +1,12 @@
 ﻿@model ArticleListDto
 
 @{
-    ViewBag.Title = "Makaleler Index";
+    ViewBag.Title = "Makaleler";
 }
+<ol class="breadcrumb mb-2 mt-2">
+    <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Article" asp-action="Index">Admin</a></li>
+    <li class="breadcrumb-item active"><a asp-area="Admin" asp-controller="Home" asp-action="Index">Makaleler</a></li>
+</ol>
 
 @if (Model.ResultStatus == ResultStatus.Success)
 {
@@ -80,5 +84,5 @@
 
 @section Scripts
 {
-    <script src="~/js/articleIndex.js" type="application/ecmascript"></script>   
+    <script src="~/AdminLTE/js/articleIndex.js" type="application/ecmascript"></script>   
 }

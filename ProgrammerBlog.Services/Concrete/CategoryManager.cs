@@ -27,6 +27,13 @@ namespace ProgrammerBlog.Services.Concrete
             _mapper = mapper;
         }
 
+
+        /// <summary>
+        /// Verilen CategoryAddDto nesnesi ve CreaterName parametresi ile yeni bit "Category" ekler
+        /// </summary>
+        /// <param name="categoryAddDto">CategoryAddDto tipinde eklenecek kategori</param>
+        /// <param name="creatorName">String tipinde kategoriyi ekleyen kullanıcının ismi</param>
+        /// <returns>"Category" ekleme işleminin başarılı olup olmadığı bilgisini(ResultStatus), duruma göre gerekli mesajı ve eklenen kategoriye ait "CategoryDto nesnesini döndürür.</returns>
         public async Task<IDataResult<CategoryDto>> Add(CategoryAddDto categoryAddDto, string creatorName)
         {
             var categoryToAdd = _mapper.Map<Category>(categoryAddDto);
@@ -40,11 +47,42 @@ namespace ProgrammerBlog.Services.Concrete
             {
                 Category = addedCategory,
                 ResultStatus = ResultStatus.Success,
-                Message = Messages.CategoryMessages.Added(categoryName:addedCategory.Name)
+                Message = Messages.CategoryMessages.Added(categoryName: addedCategory.Name)
             };
 
             return new DataResult<CategoryDto>(ResultStatus.Success, Messages.CategoryMessages.Added(categoryName: addedCategory.Name), addedCategoryDto);
         }
+
+        public async Task<IDataResult<int>> Count()
+        {
+            var categoriesCount = await _unitOfWork.Categories.CountAsync();
+            if (categoriesCount > -1)
+            {
+                return new DataResult<int>(ResultStatus.Success, categoriesCount);
+            }
+            else
+            {
+
+                return new DataResult<int>(ResultStatus.Error,"Beklenmeyen bir hata oluştu!",-1);
+            }
+        }
+
+
+        public async Task<IDataResult<int>> CountNonDeleteds()
+        {
+            var categoriesCount = await _unitOfWork.Categories.CountAsync(c=>!c.IsDeleted);
+            if (categoriesCount > -1)
+            {
+                return new DataResult<int>(ResultStatus.Success, categoriesCount);
+            }
+            else
+            {
+
+                return new DataResult<int>(ResultStatus.Error, "Beklenmeyen bir hata oluştu!", -1);
+            }
+        }
+
+
 
         public async Task<IDataResult<CategoryDto>> Delete(int categoryId, string modifierName)
         {
@@ -66,11 +104,11 @@ namespace ProgrammerBlog.Services.Concrete
                 await _unitOfWork.SaveAsync();
                 return new DataResult<CategoryDto>(ResultStatus.Success, Messages.CategoryMessages.Deleted(categoryName: deletedCategory.Name), deletedCategoryDto);
             }
-            return new DataResult<CategoryDto>(ResultStatus.Error, Messages.CategoryMessages.NotFound(isPlural:false), new CategoryDto
+            return new DataResult<CategoryDto>(ResultStatus.Error, Messages.CategoryMessages.NotFound(isPlural: false), new CategoryDto
             {
                 Category = null,
-                ResultStatus=ResultStatus.Error,
-                Message= Messages.CategoryMessages.NotFound(isPlural:false)
+                ResultStatus = ResultStatus.Error,
+                Message = Messages.CategoryMessages.NotFound(isPlural: false)
             });
         }
 
@@ -119,7 +157,7 @@ namespace ProgrammerBlog.Services.Concrete
 
         public async Task<IDataResult<CategoryListDto>> GetAllNonDeleted()
         {
-            var categories = await _unitOfWork.Categories.GetAllAsync(c=>!c.IsDeleted, c => c.Articles); //include articles
+            var categories = await _unitOfWork.Categories.GetAllAsync(c => !c.IsDeleted, c => c.Articles); //include articles
             if (categories.Count > -1)
             {
                 var categoryListDto = new CategoryListDto
@@ -156,6 +194,11 @@ namespace ProgrammerBlog.Services.Concrete
             return new DataResult<CategoryListDto>(ResultStatus.Error, Messages.CategoryMessages.NotFound(isPlural: true), null); //data:null
         }
 
+        /// <summary>
+        /// Verilen Id parametresine ait CategoryUpdateDto nesnesini döndürür.
+        /// </summary>
+        /// <param name="categoryId"> Güncellenecek kategoriye ait Id bilgisi.</param>
+        /// <returns>Asenkron olarak DataResult içerisinde CategoryUpdateDto döndürür.</returns>
         public async Task<IDataResult<CategoryUpdateDto>> GetCategoryUpdateDto(int categoryId)
         {
             var result = await _unitOfWork.Categories.IsAnyAsync(c => c.Id == categoryId);
@@ -177,7 +220,7 @@ namespace ProgrammerBlog.Services.Concrete
                 await _unitOfWork.Categories.DeleteAsync(categoryToDelete);
                 await _unitOfWork.SaveAsync();
 
-                return new Result(ResultStatus.Success, Messages.CategoryMessages.HardDeleted(categoryName:categoryToDelete.Name));
+                return new Result(ResultStatus.Success, Messages.CategoryMessages.HardDeleted(categoryName: categoryToDelete.Name));
             }
             return new DataResult<IList<Category>>(ResultStatus.Error, Messages.CategoryMessages.NotFound(isPlural: false), null);
         }
@@ -185,7 +228,7 @@ namespace ProgrammerBlog.Services.Concrete
         public async Task<IDataResult<CategoryDto>> Update(CategoryUpdateDto categoryUpdateDto, string modifierName)
         {
             var oldCategory = await _unitOfWork.Categories.GetAsync(c => c.Id == categoryUpdateDto.Id);
-            var category = _mapper.Map<CategoryUpdateDto,Category>(categoryUpdateDto,oldCategory);
+            var category = _mapper.Map<CategoryUpdateDto, Category>(categoryUpdateDto, oldCategory);
             category.ModifierName = modifierName;
             var updatedCategory = await _unitOfWork.Categories.UpdateAsync(category);
 

@@ -26,6 +26,7 @@ $(document).ready(function () {
             "searchPlaceholder": "Ara",
             "decimal": ",",
             
-        }
+        },
+        "order": [[4, "desc"]],
     });
 });

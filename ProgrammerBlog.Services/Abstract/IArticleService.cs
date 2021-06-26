@@ -26,6 +26,11 @@ namespace ProgrammerBlog.Services.Abstract
         Task<IResult> Update(ArticleUpdateDto articleUpdateDto, string modifierName);
 
         Task<IResult> Delete(int articleId, string modifierName); //make ısDeleted true
+
         Task<IResult> HardDelete(int articleId);
+
+        Task<IDataResult<int>> Count();
+
+        Task<IDataResult<int>> CountNonDeleteds();
     }
 }
