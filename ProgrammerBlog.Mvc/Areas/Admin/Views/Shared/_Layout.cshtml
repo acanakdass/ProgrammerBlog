@@ -12,7 +12,10 @@
             text-align: center;
         }
     </style>
+    @await RenderSectionAsync("Styles", false)
     @await Html.PartialAsync("_LayoutStylesPartial")
+    <link href="~/AdminLTE/css/styles.css" rel="stylesheet" />
+
 </head>
 <body class="sb-nav-fixed">
     @await Html.PartialAsync("_LayoutNavbarPartial")

@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ProgrammerBlog.Mvc.Areas.Admin.Models;
 using ProgrammerBlog.Services.Abstract;
+using ProgrammerBlog.Shared.Utilities.Results.ComplexTypes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,17 +15,35 @@ namespace ProgrammerBlog.Mvc.Areas.Admin.Controllers
     public class ArticleController : Controller
     {
 
-        private IArticleService _articleService;
+        private readonly IArticleService _articleService;
+        private readonly ICategoryService _categoryService;
 
-        public ArticleController(IArticleService articleService)
+        public ArticleController(IArticleService articleService, ICategoryService categoryService)
         {
             _articleService = articleService;
+            _categoryService = categoryService;
         }
 
+        [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var result = await _articleService.GetAll();
-            return View(result.Data);
+            var result = await _articleService.GetAllNonDeleted();
+            if (result.ResultStatus == ResultStatus.Success)
+                return View(result.Data);
+            return NotFound();
+        }
+        [HttpGet]
+        public async Task<IActionResult> Add()
+        {
+            var categoriesToSelect = await _categoryService.GetAllNonDeleted();
+            if (categoriesToSelect.ResultStatus == ResultStatus.Success)
+            {
+                return View(new ArticleAddViewModel
+                {
+                    Categories = categoriesToSelect.Data.Categories
+                });
+            }
+            return NotFound();
         }
     }
 }

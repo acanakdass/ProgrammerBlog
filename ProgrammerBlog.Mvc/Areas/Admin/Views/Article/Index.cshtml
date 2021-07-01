@@ -5,7 +5,7 @@
 }
 <ol class="breadcrumb mb-2 mt-2">
     <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Article" asp-action="Index">Admin</a></li>
-    <li class="breadcrumb-item active"><a asp-area="Admin" asp-controller="Home" asp-action="Index">Makaleler</a></li>
+    <li class="breadcrumb-item active"><a asp-area="Admin" asp-controller="Article" asp-action="Index">Makaleler</a></li>
 </ol>
 
 @if (Model.ResultStatus == ResultStatus.Success)
@@ -29,35 +29,50 @@
                     <thead>
                         <tr>
                             <th>Id</th>
-                            <th>Kategori Adı</th>
-                            <th>Kategori Açıklaması</th>
-                            <th>Aktif mi</th>
-                            <th>Silinmiş mi</th>
-                            @*<th>Not</th>*@
+                            <th>Kategori</th>
+                            <th>Başlık</th>
+                            <th>Küçük Resim</th>
+                            <th>Tarih</th>
+                            <th>Okunma Sayısı</th>
+                            <th>Yorum Sayısı</th>
+                            <th>Aktif mi?</th>
                             <th>Oluşturulma Tarihi</th>
-                            <th>Oluşturulan Kullanıcı</th>
+                            <th>Oluşturan Kullanıcı</th>
                             <th>Son Düzenlenme Tarihi</th>
                             <th>Son Düzenleyen Kullanıcı</th>
                             <th>İşlemler</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var categoryItem in Model.Articles)
+                        @foreach (var articleItem in Model.Articles)
                         {
-                            <tr name="@categoryItem.Id">
-                                <td>@categoryItem.Id</td>
-                                <td>@categoryItem.Title</td>
-                                <td>@categoryItem.Content</td>
-                                <td>@categoryItem.IsActive</td>
-                                <td>@categoryItem.IsDeleted</td>
-                                @*<td>@categoryItem.Note</td>*@
-                                <td>@categoryItem.CreatedDate.ToShortDateString()</td>
-                                <td>@categoryItem.CreaterName</td>
-                                <td>@categoryItem.ModifiedDate</td>
-                                <td>@categoryItem.ModifierName</td>
+                            <tr name="@articleItem.Id">
+                                <td>@articleItem.Id</td>
+                                <td>@articleItem.Category.Name</td>
+                                <td>@articleItem.Title</td>
+                                <td>
+                                    <img width="100" src="~/img/@articleItem.Thumbnail" alt="@articleItem.Thumbnail" />
+                                </td>
+                                <td>@articleItem.Date</td>
+                                <td>@articleItem.ViewsCount</td>
+                                <td>@articleItem.CommentCount</td>
+                                <td>
+                                    @if (articleItem.IsActive)
+                                    {
+                                        <i style="color:#5cb85c" class="fas fa-check"></i>
+                                    }
+                                    else
+                                    {
+                                        <i style="color:#d9534f" class="fas fa-times"></i>
+                                    }
+                                </td>
+                                <td>@articleItem.CreatedDate.ToShortDateString()</td>
+                                <td>@articleItem.CreaterName</td>
+                                <td>@articleItem.ModifiedDate</td>
+                                <td>@articleItem.ModifierName</td>
                                 <td style="padding:3px">
-                                    <button id="btnEdit" data-id="@categoryItem.Id" class="btn btn-primary btn-block btn-sm"><i class="fas fa-edit"></i> Düzenle</button>
-                                    <button id="btnDelete" class="btn btn-danger btn-block btn-sm" data-id="@categoryItem.Id"><i class="fas fa-minus-circle"></i> Sil</button>
+                                    <button id="btnEdit" data-id="@articleItem.Id" class="btn btn-primary btn-block btn-sm"><i class="fas fa-edit"></i> Düzenle</button>
+                                    <button id="btnDelete" class="btn btn-danger btn-block btn-sm" data-id="@articleItem.Id"><i class="fas fa-minus-circle"></i> Sil</button>
                                 </td>
                             </tr>
                         }
@@ -84,5 +99,5 @@
 
 @section Scripts
 {
-    <script src="~/AdminLTE/js/articleIndex.js" type="application/ecmascript"></script>   
+    <script src="~/AdminLTE/js/articleIndex.js" type="application/ecmascript"></script>
 }
