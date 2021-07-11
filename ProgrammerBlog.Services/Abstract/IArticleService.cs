@@ -21,6 +21,12 @@ namespace ProgrammerBlog.Services.Abstract
         
         Task<IDataResult<ArticleListDto>> GetAllByCategory(int categoryId);
 
+        /// <summary>
+        /// Parametre olarak gönderilen ArticleAddDto nesnesini veritabanına ekler.
+        /// </summary>
+        /// <param name="articleAddDto"></param>
+        /// <param name="creatorName"></param>
+        /// <returns>IResult ile içerisinde ResultStatus ve Message nesneleri döner</returns>
         Task<IResult> Add(ArticleAddDto articleAddDto, string creatorName);
 
         Task<IResult> Update(ArticleUpdateDto articleUpdateDto, string modifierName);

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using ProgrammerBlog.Entities.ComplexTypes;
 using ProgrammerBlog.Entities.Dto;
 using ProgrammerBlog.Services.Helpers.Abstract;
 using ProgrammerBlog.Shared.Utilities.Extentions;
@@ -16,10 +17,12 @@ namespace ProgrammerBlog.Services.Helpers.Concrete
     public class ImageHelper : IImageHelper
     {
         private readonly string imgFolder = "img";
+        private string userImagesFolder= "userImages";
+        private string postImagesFolder= "postImages";
 
         public IDataResult<ImageDeletedDto> DeleteUserImage(string imageName)
         {
-            
+
             var fileToDelete = Path.Combine(Directory.GetCurrentDirectory(), $"wwwroot/{imgFolder}/", imageName);
             if (System.IO.File.Exists(fileToDelete))
             {
@@ -40,18 +43,39 @@ namespace ProgrammerBlog.Services.Helpers.Concrete
             }
         }
 
-        public async Task<IDataResult<ImageUploadedDto>> UploadUserImage(string userName, IFormFile imageFile, string folderName="userImages")
+        public async Task<IDataResult<ImageUploadedDto>> Upload(string name, IFormFile imageFile, ImageType imageType, string folderName = null)
         {
+
+            /* Eğer folderName değişkeni null gelir ise, o zaman resim tipine göre (ImageType) klasör adı ataması yapılır. */
+            if (folderName == null)
+            {
+                folderName = imageType == ImageType.User ? userImagesFolder : postImagesFolder;
+            }
+
+
+            /* Eğer folderName değişkeni ile gelen klasör adı sistemimizde mevcut değilse, yeni bir klasör oluşturulur. */
             if (!Directory.Exists($"wwwroot/{imgFolder}/{folderName}"))
             {
                 Directory.CreateDirectory($"wwwroot/{imgFolder}/{folderName}");
-             }
+            }
+
+            /* Resimin yüklenme sırasındaki ilk adı oldFileName adlı değişkene atanır. */
             string oldfileName = Path.GetFileNameWithoutExtension(imageFile.FileName);  //file ismini uzantısı .jpg vs olmadan alır
+            /* Resimin uzantısı fileExtension adlı değişkene atanır. */
+
             string fileExtension = Path.GetExtension(imageFile.FileName);
             DateTime datetime = DateTime.Now;
-            string newFileName = $"{userName}_{datetime.FullDateAndTimeStringWithUnderscore()}{fileExtension}";
+
+            /*
+            // Parametre ile gelen değerler kullanılarak yeni bir resim adı oluşturulur.
+            // Örn: AhmetAkdas_587_5_38_12_3_10_2020.png
+            */
+            string newFileName = $"{name}_{datetime.FullDateAndTimeStringWithUnderscore()}{fileExtension}";
+
+            /* Kendi parametrelerimiz ile sistemimize uygun yeni bir dosya yolu (path) oluşturulur. */
             var path = Path.Combine(Directory.GetCurrentDirectory(), $"wwwroot/{imgFolder}/{folderName}", newFileName);
 
+            /* Sistemimiz için oluşturulan yeni dosya yoluna resim kopyalanır. */
             await using (var stream = new FileStream(path, FileMode.Create))
             {
                 await imageFile.CopyToAsync(stream);
@@ -65,11 +89,14 @@ namespace ProgrammerBlog.Services.Helpers.Concrete
                 Path = path,
                 Size = imageFile.Length
             };
+            string message = imageType == ImageType.User ? $"{name} adlı kullanıcı fotoğrafı başarıyla yüklendi" : $"{name} adlı makale resmi başarıyla yüklendi";
             return new DataResult<ImageUploadedDto>(
                 ResultStatus.Success,
-                $"{userName} adlı kullanıcı fotoğrafı başarıyla yüklendi",
+                message,
                 imageUploadedDto
                 );
         }
+
+
     }
 }

@@ -1,7 +1,5 @@
 ﻿@model ArticleAddViewModel
-@{
-    ViewBag.Title = "Makale Ekle";
-}
+
 
 <ol class="breadcrumb mb-2 mt-2">
     <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Article" asp-action="Index">Admin</a></li>
@@ -10,6 +8,7 @@
 </ol>
 
 <form asp-controller="Article" asp-action="Add" method="post" enctype="multipart/form-data">
+    <div asp-validation-summary="All" class="text-danger" id="validationSummary" aria-hidden="true"></div>
     <div class="row mt-2">
         <div class="col-md-8">
             <div class="card">
@@ -30,12 +29,11 @@
                 <div class="card-header">Temel Konfigürasyonlar</div>
                 <div class="card-body">
                     <div class="form-group">
-                        <label for="categoryList">Kategori</label>
-                        <select id="categoryList" class="form-control" asp-items="@(new SelectList(Model.Categories,"Id","Name") )" asp-for="CategoryId">
+                        <label for="categoryList" asp-for="CategoryId">Kategori</label>
+                        <select id="categoryList" class="form-control" asp-for="CategoryId" asp-items="@(new SelectList(Model.Categories,"Id","Name") )" >
                             <option></option>
-
                         </select>
-                        <span asp-validation-for="Categories"></span>
+                        <span asp-validation-for="CategoryId"></span>
 
                         <div class="form-group">
                             <label for="datepicker" asp-for="Date">Tarih</label>

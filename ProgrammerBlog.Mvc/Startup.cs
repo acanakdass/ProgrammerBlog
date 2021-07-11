@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using ProgrammerBlog.Data.Concrete.EntityFramework.Context;
 using ProgrammerBlog.Entities.Concrete;
+using ProgrammerBlog.Mvc.AutoMapper.Profiles;
 using ProgrammerBlog.Services.AutoMapper.Profiles;
 using ProgrammerBlog.Services.Extentions;
 using System;
@@ -39,7 +40,7 @@ namespace ProgrammerBlog.Mvc
 
             //services.AddControllersWithViews().AddRazorRuntimeCompilation();
             services.AddSession();
-            services.AddAutoMapper(typeof(CategoryProfile), typeof(ArticleProfile), typeof(UserProfile)); //Derlenme esnasýnda automapper'ýn sýnýflarý taramasýný saðlar
+            services.AddAutoMapper(typeof(CategoryProfile), typeof(ArticleProfile), typeof(UserProfile), typeof(ViewModelsProfile)); //Derlenme esnasýnda automapper'ýn sýnýflarý taramasýný saðlar
             
             
             services.LoadMyServices(connectionString:Configuration.GetConnectionString("LocalSqlServer"));  //identity services etc involved

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using ProgrammerBlog.Entities.ComplexTypes;
 using ProgrammerBlog.Entities.Concrete;
 using ProgrammerBlog.Entities.Dto;
 using ProgrammerBlog.Mvc.Areas.Admin.Models;
@@ -139,7 +140,7 @@ namespace ProgrammerBlog.Mvc.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
-                var uploadedImageDtoResult = await _imageHelper.UploadUserImage(userAddDto.UserName, userAddDto.ImageFile); //ımage upload'dan dönen filename'i image'e atar.
+                var uploadedImageDtoResult = await _imageHelper.Upload(userAddDto.UserName,userAddDto.ImageFile,ImageType.User); //ımage upload'dan dönen filename'i image'e atar.
                 if (uploadedImageDtoResult.ResultStatus == ResultStatus.Success)
                 {
                     userAddDto.Image = uploadedImageDtoResult.Data.Fullname;
@@ -250,7 +251,7 @@ namespace ProgrammerBlog.Mvc.Areas.Admin.Controllers
                 bool isNewImageUploadSuceeded = false;
                 if (userUpdateDto.ImageFile != null)
                 {
-                    var uploadedImageDtoResult = await _imageHelper.UploadUserImage(userUpdateDto.UserName, userUpdateDto.ImageFile); //ımage upload'dan dönen filename'i image'e atar.
+                    var uploadedImageDtoResult = await _imageHelper.Upload(userUpdateDto.UserName, userUpdateDto.ImageFile, ImageType.User); //ımage upload'dan dönen filename'i image'e atar.
                     if (uploadedImageDtoResult.ResultStatus == ResultStatus.Success)
                     {
                         userUpdateDto.Image = uploadedImageDtoResult.Data.Fullname;
@@ -334,7 +335,7 @@ namespace ProgrammerBlog.Mvc.Areas.Admin.Controllers
                 if (userUpdateDto.ImageFile != null)
                 {
 
-                    var uploadedImageDtoResult = await _imageHelper.UploadUserImage(userUpdateDto.UserName, userUpdateDto.ImageFile); //ımage upload'dan dönen filename'i image'e atar.
+                    var uploadedImageDtoResult = await _imageHelper.Upload(userUpdateDto.UserName, userUpdateDto.ImageFile, ImageType.User); //image upload'dan dönen filename'i image'e atar.
                     if (uploadedImageDtoResult.ResultStatus == ResultStatus.Success)
                     {
                         userUpdateDto.Image = uploadedImageDtoResult.Data.Fullname;

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using ProgrammerBlog.Entities.ComplexTypes;
 using ProgrammerBlog.Entities.Dto;
 using ProgrammerBlog.Shared.Utilities.Results.Abstract;
 using System;
@@ -11,7 +12,7 @@ namespace ProgrammerBlog.Services.Helpers.Abstract
 {
     public interface IImageHelper
     {
-        Task<IDataResult<ImageUploadedDto>> UploadUserImage(string userName, IFormFile imageFile, string folderName = "userImages");
+        Task<IDataResult<ImageUploadedDto>> Upload(string name, IFormFile imageFile, ImageType imageType, string folderName = null);
         IDataResult<ImageDeletedDto> DeleteUserImage(string imageName);
     }
 }

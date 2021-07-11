@@ -4,9 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ProgrammerBlog.Shared.Entities.Abstract
+namespace ProgrammerBlog.Entities.ComplexTypes
 {
-    public interface IEntity
+    public enum ImageType
     {
+        User=0,
+        Post=1
     }
 }

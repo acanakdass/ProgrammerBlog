@@ -16,7 +16,7 @@ namespace ProgrammerBlog.Data.Concrete.EntityFramework.Repositories
     {
         public EfCategoryRepository(DbContext context) : base(context)
         {
-        }
+        } 
         private ProgrammerBlogContext _programmerBlogContext { get { return _context as ProgrammerBlogContext; } }
 
         public async Task<Category> GetById(int categoryId)

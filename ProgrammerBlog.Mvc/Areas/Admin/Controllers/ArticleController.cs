@@ -1,7 +1,11 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ProgrammerBlog.Entities.ComplexTypes;
+using ProgrammerBlog.Entities.Dto;
 using ProgrammerBlog.Mvc.Areas.Admin.Models;
 using ProgrammerBlog.Services.Abstract;
+using ProgrammerBlog.Services.Helpers.Abstract;
 using ProgrammerBlog.Shared.Utilities.Results.ComplexTypes;
 using System;
 using System.Collections.Generic;
@@ -17,11 +21,15 @@ namespace ProgrammerBlog.Mvc.Areas.Admin.Controllers
 
         private readonly IArticleService _articleService;
         private readonly ICategoryService _categoryService;
+        private readonly IMapper _mapper;
+        private readonly IImageHelper _imageHelper;
 
-        public ArticleController(IArticleService articleService, ICategoryService categoryService)
+        public ArticleController(IArticleService articleService, ICategoryService categoryService, IMapper mapper, IImageHelper imageHelper)
         {
             _articleService = articleService;
             _categoryService = categoryService;
+            _mapper = mapper;
+            _imageHelper = imageHelper;
         }
 
         [HttpGet]
@@ -32,6 +40,7 @@ namespace ProgrammerBlog.Mvc.Areas.Admin.Controllers
                 return View(result.Data);
             return NotFound();
         }
+
         [HttpGet]
         public async Task<IActionResult> Add()
         {
@@ -44,6 +53,32 @@ namespace ProgrammerBlog.Mvc.Areas.Admin.Controllers
                 });
             }
             return NotFound();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Add(ArticleAddViewModel articleAddViewModel)
+        {
+            var categories = await _categoryService.GetAllNonDeleted();
+            articleAddViewModel.Categories = categories.Data.Categories;
+            if (ModelState.IsValid)
+            {
+                var articleAddDto = _mapper.Map<ArticleAddDto>(articleAddViewModel);
+                var imageResult = await _imageHelper.Upload(articleAddViewModel.Title, articleAddViewModel.ThumbnailFile, ImageType.Post);
+                articleAddDto.Thumbnail = imageResult.Data.Fullname;
+                var result = await _articleService.Add(articleAddDto, "Ahmet Can");
+                if (result.ResultStatus == ResultStatus.Success)
+                {
+                    TempData.Add("SuccessMessage", result.Message);
+                    return RedirectToAction("Index", "Article");
+                }
+                else
+                {
+                    ModelState.AddModelError("", result.Message);
+                    return View(articleAddViewModel);
+                }
+            }
+            return View(articleAddViewModel);
+            
         }
     }
 }

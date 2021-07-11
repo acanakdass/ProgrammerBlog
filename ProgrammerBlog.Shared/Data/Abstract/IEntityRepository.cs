@@ -15,7 +15,7 @@ namespace ProgrammerBlog.Shared.Entities.Abstract
         //predicate null verildi, null gelmez ise gelen bilgiye göre filtrelenecek
 
         Task<Type> AddAsync(Type entity);
-
+ 
         Task<Type> UpdateAsync(Type entity);
 
         Task DeleteAsync(Type entity);
