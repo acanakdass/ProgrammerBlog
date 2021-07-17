@@ -122,13 +122,33 @@ namespace ProgrammerBlog.Services.Concrete
             return new DataResult<ArticleListDto>(ResultStatus.Error, Messages.ArticleMessages.NotFound(isPlural: true), null);
         }
 
-        public async Task<IResult> Add(ArticleAddDto articleAddDto, string creatorName)
+
+        /// <summary>
+        /// Verilen Id parametresine ait ArticleUpdateDto nesnesini DataResult içerisinde döndürür.
+        /// </summary>
+        /// <param name="articleId"> Güncellenecek makaleye ait Id bilgisi.</param>
+        /// <returns>Asenkron olarak DataResult içerisinde ArticleUpdateDto döndürür.</returns>
+        public async Task<IDataResult<ArticleUpdateDto>> GetArticleUpdateDto(int articleId)
+        {
+            var result = await _unitOfWork.Articles.IsAnyAsync(c => c.Id == articleId);
+            if (result)
+            {
+                var article = await _unitOfWork.Articles.GetAsync(c => c.Id == articleId);
+                //article nesnemizi ArticleUpdateDto'ya çeviren automapper işlemi
+                var articleUpdateDto = _mapper.Map<ArticleUpdateDto>(article);
+                return new DataResult<ArticleUpdateDto>(ResultStatus.Success, articleUpdateDto);
+            }
+            return new DataResult<ArticleUpdateDto>(ResultStatus.Error, Messages.ArticleMessages.NotFound(isPlural: false), null);
+        }
+
+
+        public async Task<IResult> Add(ArticleAddDto articleAddDto, string creatorName,int userId)
         {
             //Article dönecek bir map
             var article = _mapper.Map<Article>(articleAddDto);
             article.CreaterName = creatorName;
             article.ModifierName = creatorName;
-            article.UserId = 1;
+            article.UserId = userId;
 
             await _unitOfWork.Articles.AddAsync(article);
             await _unitOfWork.SaveAsync();
@@ -170,7 +190,9 @@ namespace ProgrammerBlog.Services.Concrete
 
         public async Task<IResult> Update(ArticleUpdateDto articleUpdateDto, string modifierName)
         {
-            var article = _mapper.Map<Article>(articleUpdateDto);
+            var oldArticle = await _unitOfWork.Articles.GetAsync(a => a.Id == articleUpdateDto.Id);
+
+            var article = _mapper.Map<ArticleUpdateDto,Article>(articleUpdateDto,oldArticle);  //articleUpdateDto 'da olmayan verileri oldArticle'dakiler ile doldur.
             article.ModifierName = modifierName;
             await _unitOfWork.Articles.UpdateAsync(article);
             await _unitOfWork.SaveAsync();

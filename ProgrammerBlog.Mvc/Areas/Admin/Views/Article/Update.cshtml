@@ -1,13 +1,15 @@
-﻿@model ArticleAddViewModel
+﻿@model ArticleUpdateViewModel
 
 
 <ol class="breadcrumb mb-2 mt-2">
     <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Article" asp-action="Index">Admin</a></li>
     <li class="breadcrumb-item active"><a asp-area="Admin" asp-controller="Article" asp-action="Index">Makaleler</a></li>
-    <li class="breadcrumb-item active"><a asp-area="Admin" asp-controller="Article" asp-action="Add">Makale Oluştur</a></li>
+    <li class="breadcrumb-item active"><a asp-area="Admin" asp-controller="Article" asp-action="Update">Makale Güncelle</a></li>
 </ol>
 
-<form asp-controller="Article" asp-action="Add" method="post" enctype="multipart/form-data">
+<form asp-controller="Article" asp-action="Update" method="post" enctype="multipart/form-data">
+    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="UserId" />
     <div asp-validation-summary="All" class="text-danger" id="validationSummary" aria-hidden="true"></div>
     <div class="row mt-2">
         <div class="col-md-8">
@@ -30,7 +32,7 @@
                 <div class="card-body">
                     <div class="form-group">
                         <label for="categoryList" asp-for="CategoryId">Kategori</label>
-                        <select id="categoryList" class="form-control" asp-for="CategoryId" asp-items="@(new SelectList(Model.Categories,"Id","Name") )" >
+                        <select id="categoryList" class="form-control" asp-for="CategoryId" asp-items="@(new SelectList(Model.Categories,"Id","Name") )">
                             <option></option>
                         </select>
                         <span asp-validation-for="CategoryId"></span>
@@ -41,10 +43,15 @@
                             <span asp-validation-for="Date"></span>
                         </div>
                         <div class="form-group">
+                            <label for="thumbnail" asp-for="Thumbnail">Küçük Resim</label>
+                            <input type="hidden" id="thumbnail" asp-for="Thumbnail" accept="image/*" class="form-control-file" />
+                            <img width="120" class="img-fluid img-thumbnail" src="~/img/@Model.Thumbnail" alt="@Model.Title" />
+                            <span asp-validation-for="Thumbnail"></span>
+                        </div>
+                        <div class="form-group">
                             <label for="thumbnailUpload" asp-for="ThumbnailFile">Küçük Resim</label>
                             <input type="file" id="thumbnailUpload" asp-for="ThumbnailFile" accept="image/*" class="form-control-file" />
                             <span asp-validation-for="ThumbnailFile"></span>
-
                         </div>
                         <div class="form-check">
                             <input type="checkbox" id="isActive" asp-for="IsActive" class="form-check-input" />
@@ -82,7 +89,7 @@
                 </div>
             </div>
         </div>
-</div>
+    </div>
 </form>
 @section Scripts{
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.24.0/trumbowyg.min.js" integrity="sha512-1grPXW6pB3WKyOH6zbXrYrYf+SHKeky6JTpUVtjDfz4NZ6uIu0HLRNSmXnv5rjn7iLJXrWLoVFR3XBAuaG3IRg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>

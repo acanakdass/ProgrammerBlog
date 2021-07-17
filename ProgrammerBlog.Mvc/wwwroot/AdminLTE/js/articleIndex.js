@@ -13,8 +13,8 @@
                 className: 'btn btn-success',
                 action: function (e, dt, node, config) {
                     let url = window.location.href;
-                    url = url.replace("/Index","") //url'de /index değeri varsa onu siler.
-                    window.open(`${url}/Add`,"_self")
+                    url = url.replace("/Index", "") //url'de /index değeri varsa onu siler.
+                    window.open(`${url}/Add`, "_self")
                 }
             },
             {
@@ -24,55 +24,55 @@
                 },
                 className: 'btn btn-warning',
                 action: function (e, dt, node, config) {
-                    $.ajax({
-                        type: 'GET',
-                        //url: '@Url.Action("GetNonDeletedCategories","Category")',
-                        url: '/Admin/Category/GetNonDeletedCategories',
-                        contentType: "application/Json",
-                        beforeSend: () => {
-                            //ajax işlemi başlamadan hemen önce çalışacak kod bloğu
-                            $('#categoriesTable').hide();
-                            $('.spinner-border').show();
-                        },
-                        success: function (data) {
-                            const categoryListDto = jQuery.parseJSON(data);
-                            if (categoryListDto.ResultStatus === 0) {
-                                let tableBody = "";
-                                $.each(categoryListDto.Categories.$values, function (index, category) {
-                                    tableBody += `<tr name="${category.Id}">
+                    //$.ajax({
+                    //    type: 'GET',
+                    //    url: '@Url.Action("GetNonDeletedCategories","Category")',
+                    //    url: '/Admin/Category/GetNonDeletedCategories',
+                    //    contentType: "application/Json",
+                    //    beforeSend: () => {
+                    //        ajax işlemi başlamadan hemen önce çalışacak kod bloğu
+                    //        $('#categoriesTable').hide();
+                    //        $('.spinner-border').show();
+                    //    },
+                    //    success: function (data) {
+                    //        const categoryListDto = jQuery.parseJSON(data);
+                    //        if (categoryListDto.ResultStatus === 0) {
+                    //            let tableBody = "";
+                    //            $.each(categoryListDto.Categories.$values, function (index, category) {
+                    //                tableBody += `<tr name="${category.Id}">
 
-                                                            <td>${category.Id}</td>
-                                                            <td>${category.Name}</td>
-                                                            <td>${category.Description}</td>
-                                                            <td>${category.IsActive.toString()}</td>
-                                                            <td>${category.IsDeleted.toString()}</td>
-                                                            <td>${convertToShorterDate(category.CreatedDate)}</td>
-                                                            <td>${category.CreaterName}</td>
-                                                            <td>${category.ModifiedDate}</td>
-                                                            <td>${category.ModifierName}</td>
-                                                            <td style="padding:3px">
-                                                                <button id="btnEdit" class="btn btn-primary btn-block btn-sm" data-id="${category.Id}"><i class="fas fa-edit"></i> Düzenle</button>
-                                                                <button id="btnDelete" class="btn btn-danger btn-block btn-sm" data-id="${category.Id}"><i class="fas fa-minus-circle"></i> Sil</button>
-                                                            </td>
-                                                        </tr>`;
-                                });
-                                $('.spinner-border').hide();
+                    //                                        <td>${category.Id}</td>
+                    //                                        <td>${category.Name}</td>
+                    //                                        <td>${category.Description}</td>
+                    //                                        <td>${category.IsActive.toString()}</td>
+                    //                                        <td>${category.IsDeleted.toString()}</td>
+                    //                                        <td>${convertToShorterDate(category.CreatedDate)}</td>
+                    //                                        <td>${category.CreaterName}</td>
+                    //                                        <td>${category.ModifiedDate}</td>
+                    //                                        <td>${category.ModifierName}</td>
+                    //                                        <td style="padding:3px">
+                    //                                            <button id="btnEdit" class="btn btn-primary btn-block btn-sm" data-id="${category.Id}"><i class="fas fa-edit"></i> Düzenle</button>
+                    //                                            <button id="btnDelete" class="btn btn-danger btn-block btn-sm" data-id="${category.Id}"><i class="fas fa-minus-circle"></i> Sil</button>
+                    //                                        </td>
+                    //                                    </tr>`;
+                    //            });
+                    //            $('.spinner-border').hide();
 
-                                //$('#categoriesTable > tbody').replaceWith(tableBody);
-                                $("#categoriesTable > tbody").html(tableBody);
-                                $('#categoriesTable').fadeIn(500);
-                            } else {
-                                toastr.error('Hata', 'İşlem Başarısız');
+                    //            $('#categoriesTable > tbody').replaceWith(tableBody);
+                    //            $("#categoriesTable > tbody").html(tableBody);
+                    //            $('#categoriesTable').fadeIn(500);
+                    //        } else {
+                    //            toastr.error('Hata', 'İşlem Başarısız');
 
-                            }
-                        },
-                        error: (err) => {
-                            $('.spinner-border').hide();
-                            $('#categoriesTable').fadeIn(500);
-                            toastr.error(`$(err.responseText)`, 'İşlem Başarısız');
+                    //        }
+                    //    },
+                    //    error: (err) => {
+                    //        $('.spinner-border').hide();
+                    //        $('#categoriesTable').fadeIn(500);
+                    //        toastr.error(`$(err.responseText)`, 'İşlem Başarısız');
 
-                        }
-                    })
+                    //    }
+                    //})
                 }
             }
         ],
@@ -281,15 +281,15 @@
             //sweetAlert modal
             const id = $(this).attr('data-id');
             const deletedTableRow = $(`[name="${id}"]`);
-            const deletedRowName = deletedTableRow.find('td:eq(1)').text();
+            const deletedRowName = deletedTableRow.find('td:eq(2)').text();
             Swal.fire({
-                title: 'Kategori Sil',
-                text: `${deletedRowName} adlı kategoriyi silmek istediğinize emin misiniz?`,
+                title: 'Makale Sil',
+                text: `${deletedRowName} adlı makaleyi silmek istediğinize emin misiniz?`,
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',
                 cancelButtonColor: '#d33',
-                confirmButtonText: 'Kategoriyi Sil',
+                confirmButtonText: 'Makaleyi Sil',
                 cancelButtonText: 'Vazgeç'
             }).then((result) => {
                 if (result.isConfirmed) {
@@ -297,29 +297,35 @@
                     $.ajax({
                         type: 'POST',
                         dataType: 'json',
-                        data: { categoryId: id },
+                        data: { articleId: id },
                         //url: '@Url.Action("Delete","Category")',
-                        url: '/Admin/Category/Delete',
+                        url: '/Admin/Article/Delete',
                         success: function (data) { //data : IResult gelir
-                            const categoryDto = jQuery.parseJSON(data);
+                            const articleResult = jQuery.parseJSON(data);
                             console.log(data);
-                            if (categoryDto.ResultStatus === 0) {
-                                console.log("successFiree");
+                            console.log(articleResult);
+                            if (articleResult.ResultStatus === 0) {
                                 Swal.fire(
                                     'Başarılı!',
-                                    `${categoryDto.Category.Name} adlı kategori başarıyla silindi.`,
+                                    `${articleResult.Message}`,
                                     'success'
                                 );
-                                toastr.info(`${categoryDto.Category.Name} adlı kategori başarıyla silindi.`, "Silindi");
+                                toastr.info(`${articleResult.Message}`);
                                 deletedTableRow.fadeOut(1000);
 
+                                //$('#btnRefresh').click();
                             } else {
                                 Swal.fire({
                                     icon: 'error',
                                     title: 'Oops...',
-                                    text: `${categoryDto.message}`,
+                                    text: `${articleResult.Message}`,
                                 });
                             }
+                            //Swal.fire(
+                            //        'Başarılı!',
+                            //        `Makale başarıyla silindi.`,
+                            //        'success'
+                            //    );
                         },
                         error: (err) => {
                             toastr.warning("Hata", err);

@@ -20,7 +20,7 @@ namespace ProgrammerBlog.Services.Helpers.Concrete
         private string userImagesFolder= "userImages";
         private string postImagesFolder= "postImages";
 
-        public IDataResult<ImageDeletedDto> DeleteUserImage(string imageName)
+        public IDataResult<ImageDeletedDto> Delete(string imageName)
         {
 
             var fileToDelete = Path.Combine(Directory.GetCurrentDirectory(), $"wwwroot/{imgFolder}/", imageName);

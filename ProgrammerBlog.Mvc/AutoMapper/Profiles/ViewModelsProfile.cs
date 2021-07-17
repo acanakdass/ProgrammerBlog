@@ -13,6 +13,9 @@ namespace ProgrammerBlog.Mvc.AutoMapper.Profiles
         public ViewModelsProfile()
         {
             CreateMap<ArticleAddViewModel, ArticleAddDto>();
+            CreateMap<ArticleUpdateDto, ArticleUpdateViewModel>().ReverseMap();
+            //CreateMap<ArticleUpdateViewModel, ArticleUpdateDto>();  ReverseMap sayesinde bu işlemi yazmamıza gerek kalmaz
+
         }
     }
 }

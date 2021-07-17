@@ -71,7 +71,7 @@
                                 <td>@articleItem.ModifiedDate</td>
                                 <td>@articleItem.ModifierName</td>
                                 <td style="padding:3px">
-                                    <button id="btnEdit" data-id="@articleItem.Id" class="btn btn-primary btn-block btn-sm"><i class="fas fa-edit"></i> Düzenle</button>
+                                    <a id="btnEdit" data-id="@articleItem.Id" class="btn btn-primary btn-block btn-sm" asp-area="Admin" asp-controller="Article" asp-action="Update" asp-route-articleId="@articleItem.Id"><i class="fas fa-edit"></i> Düzenle</a>
                                     <button id="btnDelete" class="btn btn-danger btn-block btn-sm" data-id="@articleItem.Id"><i class="fas fa-minus-circle"></i> Sil</button>
                                 </td>
                             </tr>

@@ -90,6 +90,8 @@ namespace ProgrammerBlog.Mvc
             app.UseAuthentication();
             app.UseAuthorization();
 
+            //app.UseNToastNotify();
+
             app.UseEndpoints(endpoints =>
             {
 

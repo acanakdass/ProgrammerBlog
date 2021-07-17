@@ -22,12 +22,19 @@ namespace ProgrammerBlog.Services.Abstract
         Task<IDataResult<ArticleListDto>> GetAllByCategory(int categoryId);
 
         /// <summary>
+        /// Verilen Id parametresine ait ArticleUpdateDto nesnesini DataResult içerisinde döndürür.
+        /// </summary>
+        /// <param name="articleId"> Güncellenecek makaleye ait Id bilgisi.</param>
+        /// <returns>Asenkron olarak DataResult içerisinde ArticleUpdateDto döndürür.</returns>
+        Task<IDataResult<ArticleUpdateDto>> GetArticleUpdateDto(int articleId);   
+
+        /// <summary>
         /// Parametre olarak gönderilen ArticleAddDto nesnesini veritabanına ekler.
         /// </summary>
         /// <param name="articleAddDto"></param>
         /// <param name="creatorName"></param>
         /// <returns>IResult ile içerisinde ResultStatus ve Message nesneleri döner</returns>
-        Task<IResult> Add(ArticleAddDto articleAddDto, string creatorName);
+        Task<IResult> Add(ArticleAddDto articleAddDto, string creatorName, int userId);
 
         Task<IResult> Update(ArticleUpdateDto articleUpdateDto, string modifierName);
 

@@ -13,6 +13,6 @@ namespace ProgrammerBlog.Services.Helpers.Abstract
     public interface IImageHelper
     {
         Task<IDataResult<ImageUploadedDto>> Upload(string name, IFormFile imageFile, ImageType imageType, string folderName = null);
-        IDataResult<ImageDeletedDto> DeleteUserImage(string imageName);
+        IDataResult<ImageDeletedDto> Delete(string imageName);
     }
 }

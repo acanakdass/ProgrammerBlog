@@ -270,7 +270,7 @@ namespace ProgrammerBlog.Mvc.Areas.Admin.Controllers
                 {
                     if (isNewImageUploadSuceeded)
                     {
-                        _imageHelper.DeleteUserImage(oldUserImageName);
+                        _imageHelper.Delete(oldUserImageName);
                     }
                     var userUpdateAjaxViewModel = JsonSerializer.Serialize(new UserUpdateAjaxViewModel
                     {
@@ -356,7 +356,7 @@ namespace ProgrammerBlog.Mvc.Areas.Admin.Controllers
                 {
                     if (isNewImageUploadSuceeded)
                     {
-                        _imageHelper.DeleteUserImage(oldUserImageName);
+                        _imageHelper.Delete(oldUserImageName);
                     }
                     TempData.Add("SuccessMessage", $"{updatedUser.UserName} adlı kullanıcı başarıyla güncellendi");
                     return View(userUpdateDto);

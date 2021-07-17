@@ -1,8 +1,12 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using ProgrammerBlog.Entities.Concrete;
 using ProgrammerBlog.Entities.Dto;
 using ProgrammerBlog.Mvc.Areas.Admin.Models;
 using ProgrammerBlog.Services.Abstract;
+using ProgrammerBlog.Services.Helpers.Abstract;
 using ProgrammerBlog.Shared.Utilities.Extentions;
 using ProgrammerBlog.Shared.Utilities.Results.ComplexTypes;
 using System.Text.Json;
@@ -13,16 +17,16 @@ namespace ProgrammerBlog.Mvc.Areas.Admin.Controllers
 {
     [Area("Admin")]
     [Authorize(Roles = "Admin,Editor")]
-    public class CategoryController : Controller
+    public class CategoryController : BaseController
     {
         private readonly ICategoryService _categoryService;
 
-        public CategoryController(ICategoryService categoryService)
+        public CategoryController(ICategoryService categoryService, UserManager<User> userManager,
+            IMapper mapper, IImageHelper imageHelper) : base(userManager, mapper, imageHelper)
         {
-            this._categoryService = categoryService;
+            _categoryService = categoryService;
         }
 
-        
         public async Task<IActionResult> Index()
         {
             var result = await _categoryService.GetAllNonDeleted();
@@ -48,7 +52,7 @@ namespace ProgrammerBlog.Mvc.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
-                var result = await _categoryService.Add(categoryAddDto, "Ahmet Can Akdaş");
+                var result = await _categoryService.Add(categoryAddDto,LoggedInUser.UserName);
                 if (result.ResultStatus == ResultStatus.Success)
                 {
                     //View'i jsona çevirir ve gönderir, daha sonra jquery ile render edilir
@@ -91,7 +95,7 @@ namespace ProgrammerBlog.Mvc.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
-                var result = await _categoryService.Update(categoryUpdateDto, "Ahmet Can Akdaş");
+                var result = await _categoryService.Update(categoryUpdateDto, LoggedInUser.UserName);
                 if (result.ResultStatus == ResultStatus.Success)
                 {
                     //View'i jsona çevirir ve gönderir, daha sonra jquery ile render edilir
@@ -137,7 +141,7 @@ namespace ProgrammerBlog.Mvc.Areas.Admin.Controllers
         [HttpPost]
         public async Task<JsonResult> Delete(int categoryId)
         {
-            var result = await _categoryService.Delete(categoryId, "Ahmet Can Akdaş");
+            var result = await _categoryService.Delete(categoryId, LoggedInUser.UserName);
             var deletedCategory = JsonSerializer.Serialize(result.Data);
             return Json(deletedCategory);
         }
